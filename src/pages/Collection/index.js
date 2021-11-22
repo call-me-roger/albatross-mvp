@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { SimpleGrid } from 'pages/Template/styles'
 import styled from '@emotion/styled'
-import { getClaimBalance, getCollection, playGame } from 'contracts/GolfClub'
+import {
+  claimRewards,
+  getClaimBalance,
+  getCollection,
+  playGame,
+} from 'contracts/GolfClub'
 import moment from 'moment'
 import { ButtonPrimary } from 'components/Button'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
 import SimpleLoader from 'components/SimpleLoader'
 import { useHistory } from 'react-router'
+import { Flex } from 'rebass'
 
 const Display = styled.div`
   padding: 15px;
@@ -56,11 +62,26 @@ const Dashboard = () => {
     return '#c0c0c0'
   }
 
+  function handleClaimRewards() {
+    claimRewards(refreshCollection)
+  }
+
   return (
     <SimpleGrid>
       <center>
         <h1>Your Golf Club Collection</h1>
-        <h4>Rewards: {claimBalance}</h4>
+        <Flex justifyContent="center" alignItems="center">
+          <div>
+            <b>Rewards: {claimBalance}</b>
+          </div>
+          <ButtonPrimary
+            style={{ margin: '0px 15px', padding: '2px 15px', width: 'auto' }}
+            disabled={claimBalance <= 0}
+            onClick={handleClaimRewards}
+          >
+            Claim
+          </ButtonPrimary>
+        </Flex>
         {isLoading && <SimpleLoader />}
         {!isLoading && collection.length === 0 && (
           <>

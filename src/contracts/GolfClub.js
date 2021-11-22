@@ -825,7 +825,6 @@ export async function getCollection() {
           })
         }),
       )
-      console.log({ result })
     } catch (err) {
       console.log({ err })
       alert(
@@ -845,7 +844,7 @@ export async function playGame(_golfClubId, callback) {
       const contract = getSignedContract(signer)
       const sent = await contract.playGolf(_golfClubId)
       await sent.wait(1)
-      callback()
+      if (typeof callback === 'function') callback()
     } catch (err) {
       console.log({ err })
       alert('Error trying to play. Try again!')
@@ -865,6 +864,22 @@ export async function getClaimBalance() {
     } catch (err) {
       console.log({ err })
       alert('Error trying to play. Try again!')
+    }
+  }
+}
+
+export async function claimRewards(callback) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getSignedContract(signer)
+      const result = await contract.claimRewards()
+      await result.wait(1)
+      if (typeof callback === 'function') callback()
+    } catch (err) {
+      console.log({ err })
+      alert('Error trying to claim rewards. Try again!')
     }
   }
 }
