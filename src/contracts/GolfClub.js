@@ -778,7 +778,7 @@ function getSignedContract(signer) {
   )
 }
 
-function convertABI() {
+export function convertABI() {
   const newABI = new ethers.utils.Interface(SOL_ABI)
 
   return newABI.format()

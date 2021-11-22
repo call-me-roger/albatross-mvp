@@ -75,35 +75,39 @@ const Dashboard = () => {
         )}
       </center>
       <Display>
-        {collection.map((info, index) => {
+        {collection.map((golfClub, index) => {
           const readyTime = moment
-            .utc(info.secondsToPlay * 1000)
+            .utc(golfClub.secondsToPlay * 1000)
             .format('HH:mm:ss')
-          const canPlay = info.secondsToPlay <= 0
+          const canPlay = golfClub.secondsToPlay <= 0
 
           return (
             <Item
               key={index}
-              background={() => getBackgroundByRarity(info.rarity)}
+              background={() => getBackgroundByRarity(golfClub.rarity)}
             >
               <div className="background">
-                <img src={info.tokenURI} style={{ width: '100%' }} />
-                {info.name}
+                <img
+                  src={golfClub.tokenURI}
+                  style={{ width: '100%' }}
+                  alt={golfClub.name}
+                />
+                {golfClub.name}
               </div>
               <br />
               <div>
-                DNA: {info.dna}
+                DNA: {golfClub.dna}
                 <br />
-                Durability: {info.durability}
+                Durability: {golfClub.durability}
                 <br />
-                {`Wins: ${info.winCount} | Loss: ${info.lossCount}`}
+                {`Wins: ${golfClub.winCount} | Loss: ${golfClub.lossCount}`}
                 <br />
                 <center>
                   <ButtonPrimary
                     style={{ width: '100px' }}
                     onClick={
                       canPlay
-                        ? () => playGame(info.id, refreshCollection)
+                        ? () => playGame(golfClub.id, refreshCollection)
                         : () => {}
                     }
                     disabled={!canPlay}

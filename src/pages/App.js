@@ -72,6 +72,7 @@ function App() {
     }
 
     start()
+    // eslint-disable-next-line
   }, [])
 
   return (
