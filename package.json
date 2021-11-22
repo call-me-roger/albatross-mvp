@@ -54,7 +54,7 @@
   "scripts": {
     "core": "./start.sh",
     "start": "react-scripts start",
-    "build": "react-scripts --max_old_space_size=4096 build",
+    "build": "react-scripts build",
     "test": "cypress open",
     "cypress": "./node_modules/.bin/cypress install",
     "eject": "react-scripts eject",
