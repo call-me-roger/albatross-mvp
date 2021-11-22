@@ -3,7 +3,6 @@ import { SimpleGrid } from 'pages/Template/styles'
 import styled from '@emotion/styled'
 import { getClaimBalance, getCollection, playGame } from 'contracts/GolfClub'
 import moment from 'moment'
-import { provider } from 'constants/provider'
 import { ButtonPrimary } from 'components/Button'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
 import SimpleLoader from 'components/SimpleLoader'
@@ -32,7 +31,6 @@ const Dashboard = () => {
   const [isLoading, setLoading] = useState(false)
   const [collection, setCollection] = useState([])
   const [claimBalance, setClaimBalance] = useState(0)
-  const [timestamp, setTimestamp] = useState(null)
   const history = useHistory()
 
   async function refreshCollection() {
@@ -41,9 +39,6 @@ const Dashboard = () => {
     if (newCollection?.length > 0) {
       const ordered = orderArrayByObjAttr(newCollection, 'id')
       setCollection(ordered)
-      const blockNumber = await provider.getBlockNumber()
-      const currentBlock = await provider.getBlock(blockNumber)
-      if (currentBlock?.timestamp) setTimestamp(currentBlock.timestamp)
       const resultClaimBalance = await getClaimBalance()
       setClaimBalance(resultClaimBalance)
     }
