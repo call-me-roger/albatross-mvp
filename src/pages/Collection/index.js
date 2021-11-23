@@ -43,7 +43,7 @@ const Dashboard = () => {
     setLoading(true)
     const newCollection = await getCollection()
     if (newCollection?.length > 0) {
-      const ordered = orderArrayByObjAttr(newCollection, 'id')
+      const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
       setCollection(ordered)
       const resultClaimBalance = await getClaimBalance()
       setClaimBalance(resultClaimBalance)
