@@ -2,7 +2,7 @@ import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
-  '0x6b8001673e0956441CF83eB5B3a20512ea2E9656'
+  '0xBa2CcE6071f95A169122FdE4003A36973F092733'
 const SOL_ABI = [
   {
     anonymous: false,
@@ -55,23 +55,54 @@ const SOL_ABI = [
     type: 'event',
   },
   {
-    anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'id',
-        type: 'uint256',
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
       },
       {
-        indexed: false,
         internalType: 'uint256',
-        name: 'matchResult',
+        name: 'tokenId',
         type: 'uint256',
       },
     ],
-    name: 'MatchPlayed',
-    type: 'event',
+    name: 'approve',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'claimRewards',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'findGame',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_quantity',
+        type: 'uint256',
+      },
+    ],
+    name: 'mint',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
   },
   {
     anonymous: false,
@@ -91,6 +122,184 @@ const SOL_ABI = [
     ],
     name: 'OwnershipTransferred',
     type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'playRound',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'resetCooldown',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'resetMaxDurability',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: '_matchResult',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: '_roundNumber',
+        type: 'uint256',
+      },
+    ],
+    name: 'RoundPlayed',
+    type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: 'to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'tokenId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'bytes',
+        name: '_data',
+        type: 'bytes',
+      },
+    ],
+    name: 'safeTransferFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address payable',
+        name: '_to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'sendEthFromContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'sendEthToContract',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'operator',
+        type: 'address',
+      },
+      {
+        internalType: 'bool',
+        name: 'approved',
+        type: 'bool',
+      },
+    ],
+    name: 'setApprovalForAll',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'string',
+        name: '_newBaseURI',
+        type: 'string',
+      },
+    ],
+    name: 'setBaseURI',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     anonymous: false,
@@ -121,6 +330,11 @@ const SOL_ABI = [
     inputs: [
       {
         internalType: 'address',
+        name: 'from',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
         name: 'to',
         type: 'address',
       },
@@ -130,9 +344,35 @@ const SOL_ABI = [
         type: 'uint256',
       },
     ],
-    name: 'approve',
+    name: 'transferFrom',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'upgradeGolfClub',
+    outputs: [],
+    stateMutability: 'payable',
     type: 'function',
   },
   {
@@ -157,24 +397,6 @@ const SOL_ABI = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'string',
-        name: '_newName',
-        type: 'string',
-      },
-    ],
-    name: 'changeGolfClubName',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: '',
         type: 'address',
@@ -189,13 +411,6 @@ const SOL_ABI = [
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'claimRewards',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -215,32 +430,6 @@ const SOL_ABI = [
       },
     ],
     stateMutability: 'pure',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_to',
-        type: 'address',
-      },
-    ],
-    name: 'freeMint',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'freeResetCooldown',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -327,6 +516,11 @@ const SOL_ABI = [
         type: 'uint16',
       },
       {
+        internalType: 'uint16',
+        name: 'playType',
+        type: 'uint16',
+      },
+      {
         internalType: 'uint8',
         name: 'rarity',
         type: 'uint8',
@@ -378,16 +572,29 @@ const SOL_ABI = [
     type: 'function',
   },
   {
-    inputs: [
+    inputs: [],
+    name: 'maxCollection',
+    outputs: [
       {
-        internalType: 'address',
-        name: '_to',
-        type: 'address',
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
-    name: 'mint',
-    outputs: [],
-    stateMutability: 'payable',
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'maxMintPerWallet',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -451,104 +658,35 @@ const SOL_ABI = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
+        internalType: 'address',
+        name: '',
+        type: 'address',
       },
-    ],
-    name: 'playGolf',
-    outputs: [
       {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
       },
     ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
+    name: 'playerRounds',
+    outputs: [
       {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
+        internalType: 'uint16',
+        name: 'bonusPerkType',
+        type: 'uint16',
+      },
+      {
+        internalType: 'uint16',
+        name: 'hole',
+        type: 'uint16',
+      },
+      {
+        internalType: 'bool',
+        name: 'victory',
+        type: 'bool',
       },
     ],
-    name: 'resetCooldown',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'resetMaxDurability',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'from',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'to',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
-      },
-    ],
-    name: 'safeTransferFrom',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'from',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'to',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'tokenId',
-        type: 'uint256',
-      },
-      {
-        internalType: 'bytes',
-        name: '_data',
-        type: 'bytes',
-      },
-    ],
-    name: 'safeTransferFrom',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -568,62 +706,6 @@ const SOL_ABI = [
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address payable',
-        name: '_to',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '_amount',
-        type: 'uint256',
-      },
-    ],
-    name: 'sendEthFromContract',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'sendEthToContract',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'operator',
-        type: 'address',
-      },
-      {
-        internalType: 'bool',
-        name: 'approved',
-        type: 'bool',
-      },
-    ],
-    name: 'setApprovalForAll',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: '_newBaseURI',
-        type: 'string',
-      },
-    ],
-    name: 'setBaseURI',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -681,93 +763,85 @@ const SOL_ABI = [
     inputs: [
       {
         internalType: 'address',
-        name: 'from',
+        name: '',
         type: 'address',
       },
-      {
-        internalType: 'address',
-        name: 'to',
-        type: 'address',
-      },
+    ],
+    name: 'totalRounds',
+    outputs: [
       {
         internalType: 'uint256',
-        name: 'tokenId',
+        name: '',
         type: 'uint256',
       },
     ],
-    name: 'transferFrom',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
       {
         internalType: 'address',
-        name: 'newOwner',
+        name: '',
         type: 'address',
       },
     ],
-    name: 'transferOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
+    name: 'victories',
+    outputs: [
       {
         internalType: 'uint256',
-        name: '_golfClubId',
+        name: '',
         type: 'uint256',
       },
     ],
-    name: 'upgradeGolfClub',
-    outputs: [],
-    stateMutability: 'payable',
+    stateMutability: 'view',
     type: 'function',
   },
 ]
 export const GOLF_CLUB_CONTRACT_ABI = [
   'event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)',
   'event ApprovalForAll(address indexed owner, address indexed operator, bool approved)',
-  'event MatchPlayed(uint256 id, uint256 matchResult)',
-  'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',
-  'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
   'function approve(address to, uint256 tokenId)',
-  'function balanceOf(address owner) view returns (uint256)',
-  'function changeGolfClubName(uint256 _golfClubId, string _newName)',
-  'function claimBalance(address) view returns (uint256)',
   'function claimRewards()',
-  'function concatGolfClubName(uint256 _tokenId) pure returns (string)',
-  'function freeMint(address _to) payable',
-  'function freeResetCooldown(uint256 _golfClubId)',
-  'function getApproved(uint256 tokenId) view returns (address)',
-  'function getCollectionByOwner(address _owner) view returns (uint256[])',
-  'function golf_clubs(uint256) view returns (uint256 id, uint256 dna, uint32 level, uint32 readyTime, uint16 durability, uint16 winCount, uint16 lossCount, uint8 rarity, string name)',
-  'function isApprovedForAll(address owner, address operator) view returns (bool)',
-  'function isOwner() view returns (bool)',
-  'function mint(address _to) payable',
-  'function name() view returns (string)',
-  'function nextTokenId() view returns (uint256)',
-  'function owner() view returns (address)',
-  'function ownerOf(uint256 tokenId) view returns (address)',
-  'function playGolf(uint256 _golfClubId)',
+  'function findGame() payable',
+  'function mint(address _to, uint256 _quantity) payable',
+  'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',
+  'function playRound(uint256 _golfClubId)',
   'function renounceOwnership()',
   'function resetCooldown(uint256 _golfClubId) payable',
   'function resetMaxDurability(uint256 _golfClubId) payable',
+  'event RoundPlayed(uint256 _golfClubId, uint256 _matchResult, uint256 _roundNumber)',
   'function safeTransferFrom(address from, address to, uint256 tokenId)',
   'function safeTransferFrom(address from, address to, uint256 tokenId, bytes _data)',
-  'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
   'function sendEthFromContract(address _to, uint256 _amount)',
   'function sendEthToContract() payable',
   'function setApprovalForAll(address operator, bool approved)',
   'function setBaseURI(string _newBaseURI)',
-  'function supportsInterface(bytes4 interfaceId) view returns (bool)',
-  'function symbol() view returns (string)',
-  'function tokenURI(uint256 _golfClubId) view returns (string)',
+  'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
   'function transferFrom(address from, address to, uint256 tokenId)',
   'function transferOwnership(address newOwner)',
   'function upgradeGolfClub(uint256 _golfClubId) payable',
+  'function balanceOf(address owner) view returns (uint256)',
+  'function claimBalance(address) view returns (uint256)',
+  'function concatGolfClubName(uint256 _tokenId) pure returns (string)',
+  'function getApproved(uint256 tokenId) view returns (address)',
+  'function getCollectionByOwner(address _owner) view returns (uint256[])',
+  'function golf_clubs(uint256) view returns (uint256 id, uint256 dna, uint32 level, uint32 readyTime, uint16 durability, uint16 winCount, uint16 lossCount, uint16 playType, uint8 rarity, string name)',
+  'function isApprovedForAll(address owner, address operator) view returns (bool)',
+  'function isOwner() view returns (bool)',
+  'function maxCollection() view returns (uint256)',
+  'function maxMintPerWallet() view returns (uint256)',
+  'function name() view returns (string)',
+  'function nextTokenId() view returns (uint256)',
+  'function owner() view returns (address)',
+  'function ownerOf(uint256 tokenId) view returns (address)',
+  'function playerRounds(address, uint256) view returns (uint16 bonusPerkType, uint16 hole, bool victory)',
+  'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
+  'function supportsInterface(bytes4 interfaceId) view returns (bool)',
+  'function symbol() view returns (string)',
+  'function tokenURI(uint256 _golfClubId) view returns (string)',
+  'function totalRounds(address) view returns (uint256)',
+  'function victories(address) view returns (uint256)',
 ]
 
 function getSignedContract(signer) {
@@ -785,14 +859,28 @@ export function convertABI() {
 }
 //console.log(convertABI())
 
-export async function mint() {
+export const getPerkByType = _type => {
+  if (Number(_type) === 100) return 'Long'
+  if (Number(_type) === 200) return 'Short'
+  if (Number(_type) === 300) return 'Precision'
+  if (Number(_type) === 400) return 'Obstacle'
+  return 'Undefined'
+}
+
+export const getMintValueByQty = _quantity => {
+  const price = 1
+  return Number(_quantity * price).toString()
+}
+
+export async function mint(_quantity) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   if (address) {
     try {
+      console.log({ address, _quantity })
       const contract = getSignedContract(signer)
-      const sent = await contract.mint(address, {
-        value: ethers.utils.parseEther('0.1'),
+      const sent = await contract.mint(address, _quantity, {
+        value: ethers.utils.parseEther(getMintValueByQty(_quantity)),
       })
       await sent.wait(1)
       alert('Your Golf Club NFT was MINTED!')
@@ -835,6 +923,53 @@ export async function getCollection() {
   return result
 }
 
+export async function getRounds() {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  const result = []
+  if (address) {
+    try {
+      const contract = getSignedContract(signer)
+      const getRounds = await contract.totalRounds(address)
+      const totalRounds = getRounds.toNumber()
+
+      if (totalRounds > 0) {
+        for (let i = 0; i < totalRounds; i++) {
+          const round = await contract.playerRounds(address, i)
+          result.push(round)
+        }
+      }
+    } catch (err) {
+      console.log({ err })
+      alert(
+        'Error getting owner collection. Connect your wallet or change the network!',
+      )
+    }
+  }
+  return result
+}
+
+export async function findGame(callback) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  const result = []
+  const gameFeePrice = '0.015'
+  if (address) {
+    try {
+      const contract = getSignedContract(signer)
+      const sent = await contract.findGame({
+        value: ethers.utils.parseEther(gameFeePrice),
+      })
+      await sent.wait(1)
+      if (typeof callback === 'function') callback()
+    } catch (err) {
+      console.log({ err })
+      alert('Error trying to find a game. Try again!')
+    }
+  }
+  return result
+}
+
 export async function playGame(_golfClubId, callback) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
@@ -842,7 +977,7 @@ export async function playGame(_golfClubId, callback) {
   if (address) {
     try {
       const contract = getSignedContract(signer)
-      const sent = await contract.playGolf(_golfClubId)
+      const sent = await contract.playRound(_golfClubId)
       await sent.wait(1)
       if (typeof callback === 'function') callback()
     } catch (err) {
@@ -882,4 +1017,12 @@ export async function claimRewards(callback) {
       alert('Error trying to claim rewards. Try again!')
     }
   }
+}
+
+export function getBackgroundByRarity(_rarity) {
+  if (_rarity === 4) return '#bb9700'
+  if (_rarity === 3) return '#be32f3'
+  if (_rarity === 2) return '#0071e1'
+  if (_rarity === 1) return '#00ff01'
+  return '#dedede'
 }

@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { SimpleGrid } from 'pages/Template/styles'
 import styled from '@emotion/styled'
 import { Flex } from 'rebass'
 import { theme } from 'theme'
 import { ButtonPrimary } from 'components/Button'
-import { mint } from 'contracts/GolfClub'
+import { getMintValueByQty, mint } from 'contracts/GolfClub'
+import Input from 'components/NumericalInput'
+import { InputRow } from 'components/Forms/inputs'
 
 const MintContainer = styled.div`
   padding: 15px;
@@ -19,8 +21,21 @@ const GifBox = styled.div`
 `
 
 const Dashboard = () => {
+  const [quantity, setQuantity] = useState(1)
+  const maxMintPerRequest = 5
+
   function handleMint() {
-    mint()
+    if (quantity > 0) mint(quantity)
+  }
+
+  function updateQuantity(e) {
+    const { value } = e.target
+    if (value === 0) {
+      setQuantity(1)
+    } else {
+      const finalQty = value <= maxMintPerRequest ? value : maxMintPerRequest
+      setQuantity(finalQty)
+    }
   }
 
   return (
@@ -29,13 +44,23 @@ const Dashboard = () => {
         <MintContainer>
           <h1>Here you can MINT your own GOLF CLUB!</h1>
           <h4>
-            They are a collection of 5000 exclusive and randomly generated Golf
+            It's a collection of 5000 exclusive and randomly generated Golf
             Clubs. <br />
             With 1 you can play-to-earn everyday and receive rawards to claim.
           </h4>
-          <ButtonPrimary onClick={handleMint} style={{ width: '200px' }}>
-            0.1 DRC to MINT NOW!
-          </ButtonPrimary>
+          <Flex justifyContent="flex-start">
+            <InputRow>
+              <Input
+                style={{ textAlign: 'right' }}
+                value={quantity}
+                onChange={updateQuantity}
+                placeholder="Quantity"
+              />
+            </InputRow>
+            <ButtonPrimary onClick={handleMint} style={{ width: 'auto' }}>
+              {getMintValueByQty(quantity)} DRC to MINT NOW!
+            </ButtonPrimary>
+          </Flex>
         </MintContainer>
         <GifBox />
       </Flex>

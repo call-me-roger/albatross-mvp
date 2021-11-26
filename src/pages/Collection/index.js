@@ -3,8 +3,12 @@ import { SimpleGrid } from 'pages/Template/styles'
 import styled from '@emotion/styled'
 import {
   claimRewards,
+  findGame,
+  getBackgroundByRarity,
   getClaimBalance,
   getCollection,
+  getPerkByType,
+  getRounds,
   playGame,
 } from 'contracts/GolfClub'
 import moment from 'moment'
@@ -36,15 +40,18 @@ const Item = styled.div`
 const Dashboard = () => {
   const [isLoading, setLoading] = useState(false)
   const [collection, setCollection] = useState([])
+  const [rounds, setRounds] = useState([])
   const [claimBalance, setClaimBalance] = useState(0)
   const history = useHistory()
 
   async function refreshCollection() {
     setLoading(true)
     const newCollection = await getCollection()
+    const newRounds = await getRounds()
     if (newCollection?.length > 0) {
       const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
       setCollection(ordered)
+      setRounds(newRounds)
       const resultClaimBalance = await getClaimBalance()
       setClaimBalance(resultClaimBalance)
     }
@@ -55,15 +62,12 @@ const Dashboard = () => {
     refreshCollection()
   }, [])
 
-  function getBackgroundByRarity(_rarity) {
-    if (_rarity === 3) return '#bb9700'
-    if (_rarity === 2) return '#8a32db'
-    if (_rarity === 1) return '#00b657'
-    return '#c0c0c0'
-  }
-
   function handleClaimRewards() {
     claimRewards(refreshCollection)
+  }
+
+  function handleFindGame() {
+    findGame(refreshCollection)
   }
 
   return (
@@ -82,6 +86,14 @@ const Dashboard = () => {
             Claim
           </ButtonPrimary>
         </Flex>
+        <div>
+          <br />
+          {collection.length > 0 && (
+            <ButtonPrimary style={{ width: '200px' }} onClick={handleFindGame}>
+              Find new games
+            </ButtonPrimary>
+          )}
+        </div>
         {isLoading && <SimpleLoader />}
         {!isLoading && collection.length === 0 && (
           <>
@@ -95,6 +107,25 @@ const Dashboard = () => {
           </>
         )}
       </center>
+      <Flex style={{ flexFlow: 'row wrap' }}>
+        {rounds?.map((roundInfo, index) => {
+          return (
+            <div
+              key={index}
+              style={{
+                width: '100px',
+                padding: '15px',
+                margin: '15px',
+                backgroundColor: '#000',
+              }}
+            >
+              <h3>{roundInfo.hole}</h3>
+              <h4>{getPerkByType(roundInfo.bonusPerkType)}</h4>
+              {roundInfo.victory && <h5>Victory</h5>}
+            </div>
+          )
+        })}
+      </Flex>
       <Display>
         {collection.map((golfClub, index) => {
           const readyTime = moment
@@ -120,6 +151,8 @@ const Dashboard = () => {
                 DNA: {golfClub.dna}
                 <br />
                 Durability: {golfClub.durability}
+                <br />
+                Perk: {getPerkByType(golfClub.playType)}
                 <br />
                 {`Wins: ${golfClub.winCount} | Loss: ${golfClub.lossCount}`}
                 <br />
