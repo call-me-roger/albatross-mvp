@@ -19,7 +19,7 @@ import { orderArrayByObjAttr } from '../../utils/array/sort'
 import SimpleLoader from 'components/SimpleLoader'
 import { useHistory } from 'react-router'
 import { Flex } from 'rebass'
-import { darken, lighten } from 'polished'
+import { darken } from 'polished'
 
 const Display = styled.div`
   padding: 15px;
