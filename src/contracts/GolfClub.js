@@ -1,5 +1,6 @@
 import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
+import { ruleOfThree } from 'utils/MathUtils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
   '0xBa2CcE6071f95A169122FdE4003A36973F092733'
@@ -1025,4 +1026,17 @@ export function getBackgroundByRarity(_rarity) {
   if (_rarity === 2) return '#0071e1'
   if (_rarity === 1) return '#00ff01'
   return '#dedede'
+}
+
+export function getRarityTextByInt(_rarity) {
+  if (_rarity === 4) return 'Legendary'
+  if (_rarity === 3) return 'Epic'
+  if (_rarity === 2) return 'Rare'
+  if (_rarity === 1) return 'Uncommon'
+  return 'Common'
+}
+
+export function getSecondsToPlayPercentage(_secondsToPlay) {
+  const total24h = 86400
+  return ruleOfThree(total24h, _secondsToPlay)
 }
