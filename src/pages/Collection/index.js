@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { SimpleGrid } from 'pages/Template/styles'
-import styled from '@emotion/styled'
 import {
   claimRewards,
   findGame,
@@ -9,17 +8,18 @@ import {
   getCollection,
   getPerkByType,
   getRarityTextByInt,
-  getRounds,
   getSecondsToPlayPercentage,
   playGame,
 } from 'contracts/GolfClub'
 import moment from 'moment'
+import styled from 'styled-components'
 import { ButtonPrimary } from 'components/Button'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
 import SimpleLoader from 'components/SimpleLoader'
-import { useHistory } from 'react-router'
 import { Flex } from 'rebass'
 import { darken } from 'polished'
+import useLoading from 'hooks/useLoading'
+import NoGolfClubMessage from 'components/NoGolfClubMessage'
 
 const Display = styled.div`
   padding: 15px;
@@ -29,14 +29,15 @@ const Display = styled.div`
 `
 const Item = styled.div`
   position: relative;
-  width: 31.3%;
+  width: 15.6%;
   padding: 1%;
 
   text-align: center;
 
   .card {
     position: relative;
-    border-radius: 4px;
+    border-radius: 10px;
+    overflow: hidden;
     padding: 20px 50px;
     background-color: ${({ background }) => background};
     border: ${({ background }) => `2px solid ${darken('0.3', background)}`};
@@ -49,7 +50,7 @@ const Level = styled.div`
   left: 15px;
   width: 30px;
   height: 30px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: bold;
   color: #fff;
   z-index: 1;
@@ -57,6 +58,7 @@ const Level = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: 'Satisfy', cursive;
   text-shadow: 2px 0 0 #000, -1px 0 0 #000, 0 2px 0 #000, 0 -1px 0 #000,
     2px 2px #000, -1px -1px 0 #000, 2px -1px 0 #000, -1px 2px 0 #000;
 
@@ -78,7 +80,7 @@ const Attributes = styled.div`
   bottom: 0px;
   padding: 10px;
   padding-bottom: 15px;
-  font-size: 18px;
+  font-size: 20px;
   width: 100%;
   font-weight: bold;
   color: #fff;
@@ -91,12 +93,14 @@ const Attributes = styled.div`
     position: relative;
     padding: 10px;
     width: 100px;
-    height: 30px;
+    height: 35px;
     background: ${({ background }) => darken('0.3', background)};
-    border-radius: 4px;
-    line-height: 14px;
+    border-radius: 10px;
+    border: 1px solid #111;
+    line-height: 18px;
     text-align: right;
     margin-top: 15px !important;
+    font-family: 'Satisfy', cursive;
     label {
       display: block;
       position: absolute;
@@ -104,16 +108,22 @@ const Attributes = styled.div`
       height: 20px;
       line-height: 20px;
       top: -10px;
-      font-size: 12px;
+      font-size: 16px;
+      font-family: 'Satisfy', cursive;
     }
   }
   .bottom-texts {
     position: absolute;
     right: 10px;
-    bottom: 10px;
+    bottom: 15px;
     text-align: right;
-    font-size: 14px;
+    font-size: 16px;
+    font-family: 'Satisfy', cursive;
 
+    .rarity,
+    .name {
+      font-family: 'Satisfy', cursive;
+    }
     .rarity {
       color: #ccc;
     }
@@ -141,28 +151,25 @@ const SecondsToPlay = styled.div`
 `
 
 const Dashboard = () => {
-  const [isLoading, setLoading] = useState(false)
   const [collection, setCollection] = useState([])
-  const [rounds, setRounds] = useState([])
   const [claimBalance, setClaimBalance] = useState(0)
-  const history = useHistory()
+  const { isLoading, startLoading, stopLoading } = useLoading()
 
   async function refreshCollection() {
-    setLoading(true)
+    startLoading()
     const newCollection = await getCollection()
-    const newRounds = await getRounds()
     if (newCollection?.length > 0) {
       const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
       setCollection(ordered)
-      setRounds(newRounds)
       const resultClaimBalance = await getClaimBalance()
       setClaimBalance(resultClaimBalance)
     }
-    setLoading(false)
+    stopLoading()
   }
 
   useEffect(() => {
     refreshCollection()
+    // eslint-disable-next-line
   }, [])
 
   function handleClaimRewards() {
@@ -198,37 +205,8 @@ const Dashboard = () => {
           )}
         </div>
         {isLoading && <SimpleLoader />}
-        {!isLoading && collection.length === 0 && (
-          <>
-            <h5>You have 0 Golf Clubs in your wallet.</h5>
-            <ButtonPrimary
-              style={{ width: 'auto' }}
-              onClick={() => history.push('/')}
-            >
-              Mint your first one here!
-            </ButtonPrimary>
-          </>
-        )}
+        <NoGolfClubMessage isLoading={isLoading} collection={collection} />
       </center>
-      <Flex style={{ flexFlow: 'row wrap' }}>
-        {rounds?.map((roundInfo, index) => {
-          return (
-            <div
-              key={index}
-              style={{
-                width: '100px',
-                padding: '15px',
-                margin: '15px',
-                backgroundColor: '#000',
-              }}
-            >
-              <h3>{roundInfo.hole}</h3>
-              <h4>{getPerkByType(roundInfo.bonusPerkType)}</h4>
-              {roundInfo.victory && <h5>Victory</h5>}
-            </div>
-          )
-        })}
-      </Flex>
       <Display>
         {collection.map((golfClub, index) => {
           const readyTime = moment

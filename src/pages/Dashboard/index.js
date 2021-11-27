@@ -40,7 +40,7 @@ const Dashboard = () => {
 
   return (
     <SimpleGrid>
-      <Flex style={{ padding: '15px' }}>
+      <Flex style={{ padding: '15px' }} justifyContent="center">
         <MintContainer>
           <h1>Here you can MINT your own GOLF CLUB!</h1>
           <h4>

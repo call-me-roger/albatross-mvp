@@ -2,6 +2,7 @@ import React, { StrictMode } from 'react'
 import ReactGA from 'react-ga'
 import ReactDOM from 'react-dom'
 import Root from './root'
+import 'index.css'
 
 window.addEventListener('error', error => {
   ReactGA.exception({

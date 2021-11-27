@@ -260,6 +260,12 @@ function Header() {
               <Grid />
             </SmallOnly>
           </StyledNavLink>
+          <StyledNavLink id={`play-nav-link`} to={'/play'} exact>
+            <HideSmall>Play!</HideSmall>
+            <SmallOnly>
+              <Grid />
+            </SmallOnly>
+          </StyledNavLink>
         </HeaderLinks>
       )}
 
