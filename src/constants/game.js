@@ -13,3 +13,14 @@ export function getGameSceneImage(round) {
 
   return `${imagesPath}/${image}.${format}`
 }
+
+export function getGameResultImage(result) {
+  const imagesPath = `${process.env.PUBLIC_URL}/images/game`
+  const format = 'gif'
+  let image = ''
+
+  if (result === 'win') image = 'you-win'
+  if (result === 'loss') image = 'you-missed'
+
+  return `${imagesPath}/${image}.${format}`
+}

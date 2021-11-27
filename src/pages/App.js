@@ -1,15 +1,15 @@
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 import React, { Suspense, useEffect } from 'react'
 import { HashRouter as Router, Switch } from 'react-router-dom'
 import styled from 'styled-components'
-import ModalProvider from 'components/ModalProvider'
-import ProtectedRoute from 'components/ProtectedRoute'
+import { ethers } from 'ethers'
 import { routes } from './routes'
 import { CHAIN_ID, metamaskParams, provider } from 'constants/provider'
-import { useAccountState } from '../store/account/state'
 import Header from 'components/Header'
-import { ethers } from 'ethers'
-import 'slick-carousel/slick/slick.css'
-import 'slick-carousel/slick/slick-theme.css'
+import ModalProvider from 'components/ModalProvider'
+import ProtectedRoute from 'components/ProtectedRoute'
+import { useAccountState } from '../store/account/state'
 
 const AppWrapper = styled.div`
   display: flex;

@@ -53,7 +53,6 @@ const StyledDialogContent = styled(
 
     align-self: ${({ mobile }) => (mobile ? 'flex-end' : 'center')};
 
-    max-width: 420px;
     ${({ maxHeight }) =>
       maxHeight &&
       css`
@@ -72,13 +71,15 @@ const StyledDialogContent = styled(
     `}
     ${({ theme, mobile }) => theme.mediaWidth.upToSmall`
       width:  85vw;
-      ${mobile &&
+      ${
+        mobile &&
         css`
           width: 100vw;
           border-radius: 20px;
           border-bottom-left-radius: 0;
           border-bottom-right-radius: 0;
-        `}
+        `
+      }
     `}
   }
 `

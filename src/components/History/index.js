@@ -2,17 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { useHistory } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { connect } from 'react-redux'
 import { ButtonGray } from 'components/Button'
 import { SimpleGrid } from 'pages/Template/styles'
 import Transaction from '../Transaction'
 import useAddressTransactions from 'hooks/useAddressTransactions'
 
-const History = ({ client, limit, seeMore, seeMoreCallback, simpleLayout }) => {
-  const { address } = client
-  const { transactions } = useAddressTransactions({
-    address,
-  })
+const History = ({ limit, seeMore, seeMoreCallback, simpleLayout }) => {
+  const { transactions } = useAddressTransactions({})
 
   const { t } = useTranslation()
   const history = useHistory()
@@ -32,7 +28,6 @@ const History = ({ client, limit, seeMore, seeMoreCallback, simpleLayout }) => {
           <Transaction
             key={transaction.hash}
             transaction={transaction}
-            address={address}
             simpleLayout={simpleLayout}
           />
         )
@@ -51,7 +46,6 @@ const History = ({ client, limit, seeMore, seeMoreCallback, simpleLayout }) => {
 
 History.propTypes = {
   transactions: PropTypes.array,
-  client: PropTypes.object.isRequired,
   seeMore: PropTypes.bool,
   simpleLayout: PropTypes.bool,
 }
@@ -62,5 +56,4 @@ History.defaultProps = {
   simpleLayout: false,
 }
 
-const state = ({ client }) => ({ client })
-export default connect(state)(History)
+export default History
