@@ -892,7 +892,10 @@ export const getMintValueByQty = _quantity => {
   return Number(_quantity * price).toString()
 }
 
-export async function mint(_quantity) {
+export async function mint(
+  _quantity,
+  { onSuccess, onError, onSendTransaction },
+) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   if (address) {
@@ -901,11 +904,12 @@ export async function mint(_quantity) {
       const sent = await contract.mint(address, _quantity, {
         value: ethers.utils.parseEther(getMintValueByQty(_quantity)),
       })
+      if (typeof onSendTransaction === 'function')
+        onSendTransaction({ result: sent })
       await sent.wait(1)
-      alert('Your Golf Club NFT was MINTED!')
-    } catch (err) {
-      console.log({ err })
-      alert('Error trying to mint your NFT. Try again!')
+      if (typeof onSuccess === 'function') onSuccess({ result: sent })
+    } catch (error) {
+      if (typeof onError === 'function') onError({ error })
     }
   }
 }

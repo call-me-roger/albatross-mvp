@@ -7,6 +7,9 @@ import { ButtonPrimary } from 'components/Button'
 import { getMintValueByQty, mint } from 'contracts/GolfClub'
 import Input from 'components/NumericalInput'
 import { InputRow } from 'components/Forms/inputs'
+import { MINT_RESULT_SUCCESS, MINT_START } from 'store/application/types'
+import { useApplicationState } from 'store/application/state'
+import SimpleLoader from 'components/SimpleLoader'
 
 const MintContainer = styled.div`
   padding: 15px;
@@ -22,10 +25,64 @@ const GifBox = styled.div`
 
 const Dashboard = () => {
   const [quantity, setQuantity] = useState(1)
+  const { openPopup, closePopup } = useApplicationState()
   const maxMintPerRequest = 5
 
+  function mintedNftEffect() {
+    closePopup(MINT_START)
+    openPopup(MINT_RESULT_SUCCESS, () => (
+      <div>
+        <h1>Your NFT was minted!</h1>
+        <ButtonPrimary
+          onClick={() => closePopup(MINT_RESULT_SUCCESS)}
+          style={{ width: '150px' }}
+        >
+          Continue...
+        </ButtonPrimary>
+      </div>
+    ))
+  }
+
+  function errorMinting() {
+    closePopup(MINT_START)
+    openPopup(MINT_RESULT_SUCCESS, () => (
+      <div>
+        <h3>Error trying to mint the NFT.</h3>
+        <h4>You can reload the page and try again.</h4>
+        <ButtonPrimary
+          onClick={() => window.location.reload()}
+          style={{ width: '150px' }}
+        >
+          Reload page
+        </ButtonPrimary>
+      </div>
+    ))
+  }
+
+  function waitConfirmation() {
+    openPopup(MINT_START, () => (
+      <div align="center">
+        <h3>Transaction sent. </h3>
+        <h4>Waiting block confirmations...</h4>
+        <SimpleLoader />
+      </div>
+    ))
+  }
+
   function handleMint() {
-    if (quantity > 0) mint(quantity)
+    if (quantity > 0) {
+      openPopup(MINT_START, () => (
+        <div align="center">
+          <h3>Waiting user to approve the transaction...</h3>
+          <SimpleLoader />
+        </div>
+      ))
+      mint(quantity, {
+        onSuccess: mintedNftEffect,
+        onError: errorMinting,
+        onSendTransaction: waitConfirmation,
+      })
+    }
   }
 
   function updateQuantity(e) {
