@@ -228,8 +228,7 @@ const GameSlider = ({
                 const isCurrentRound = currentRound === index
                 const bonusActive =
                   isCurrentRound &&
-                  selectedGolfClub.playType === roundInfo.bonusPerkType
-                console.log({ selectedGolfClub, roundInfo })
+                  selectedGolfClub?.playType === roundInfo.bonusPerkType
 
                 return (
                   <Scene key={index}>
