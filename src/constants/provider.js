@@ -5,7 +5,7 @@ export const provider = new ethers.providers.Web3Provider(
   'any',
 )
 
-export const CHAIN_ID = '0x102D'
+export const CHAIN_ID = '0x102D' // Hex of 4141
 
 export const metamaskParams = [
   {

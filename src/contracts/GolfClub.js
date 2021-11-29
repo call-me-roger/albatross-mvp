@@ -1055,7 +1055,7 @@ export async function claimRewards(callback) {
   const address = await signer.getAddress()
   if (address) {
     try {
-      const contract = getReadContract()
+      const contract = getSignedContract(signer)
       const result = await contract.claimRewards()
       await result.wait(1)
       if (typeof callback === 'function') callback()
@@ -1085,4 +1085,8 @@ export function getRarityTextByInt(_rarity) {
 export function getSecondsToPlayPercentage(_secondsToPlay) {
   const total24h = 86400
   return ruleOfThree(total24h, _secondsToPlay)
+}
+
+export function getTournamentNumberByRoundIndex(_roundIndex) {
+  return Math.ceil((((_roundIndex + 1) / 18) * 100) / 100)
 }

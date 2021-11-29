@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { SimpleGrid } from 'pages/Template/styles'
-import {
-  claimRewards,
-  getClaimBalance,
-  getCollection,
-  listenRoundPlayed,
-} from 'contracts/GolfClub'
+import { getCollection, listenRoundPlayed } from 'contracts/GolfClub'
 import { ButtonPrimary } from 'components/Button'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
-import SimpleLoader from 'components/SimpleLoader'
-import { Flex } from 'rebass'
 import GameSlider from 'components/GameSlider'
 import useLoading from 'hooks/useLoading'
 import NoGolfClubMessage from 'components/NoGolfClubMessage'
@@ -51,10 +44,9 @@ const GameScene = styled.div`
 `
 
 const Play = () => {
-  const [claimBalance, setClaimBalance] = useState(0)
   const [collection, setCollection] = useState([])
-  const [selectedGolfClub, setSelectedGolfClub] = useState(null)
-  const { isLoading, startLoading, stopLoading } = useLoading()
+  const [selectedGolfClubId, setSelectedGolfClubId] = useState(null)
+  const { isLoading, neverLoaded, startLoading, stopLoading } = useLoading()
   const { openPopup, closePopup } = useApplicationState()
 
   async function refreshCollection() {
@@ -63,8 +55,6 @@ const Play = () => {
     if (newCollection?.length > 0) {
       const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
       setCollection(ordered)
-      const resultClaimBalance = await getClaimBalance()
-      setClaimBalance(resultClaimBalance)
     }
     stopLoading()
   }
@@ -105,39 +95,33 @@ const Play = () => {
     // eslint-disable-next-line
   }, [])
 
-  function handleClaimRewards() {
-    claimRewards(refreshCollection)
+  function getGolfClubById(_golfClubId) {
+    const filtered = collection.filter(
+      ({ id }) => Number(id) === Number(_golfClubId),
+    )
+
+    if (filtered[0]) return filtered[0]
+    return null
   }
 
   return (
     <SimpleGrid>
       <center>
-        <h1>Choose the best Golf Club to make a play!</h1>
-        <Flex justifyContent="center" alignItems="center">
-          <div>
-            <b>Rewards: {claimBalance}</b>
-          </div>
-          <ButtonPrimary
-            style={{ margin: '0px 15px', padding: '2px 15px', width: 'auto' }}
-            disabled={claimBalance <= 0}
-            onClick={handleClaimRewards}
-          >
-            Claim
-          </ButtonPrimary>
-        </Flex>
-        {isLoading && <SimpleLoader />}
+        <h1>Play tournaments to earn DRC</h1>
         <NoGolfClubMessage isLoading={isLoading} collection={collection} />
       </center>
       <GameSlider
-        selectedGolfClub={selectedGolfClub}
-        resetSelectedGolfClub={() => setSelectedGolfClub(null)}
+        selectedGolfClubId={selectedGolfClubId}
+        selectedGolfClub={getGolfClubById(selectedGolfClubId)}
+        resetSelectedGolfClubId={() => setSelectedGolfClubId(null)}
         refreshCollection={refreshCollection}
       />
       <CollectionSlider
         collection={collection}
         isLoading={isLoading}
-        onClick={golfClubId => setSelectedGolfClub(golfClubId)}
-        selectedGolfClub={selectedGolfClub}
+        neverLoaded={neverLoaded}
+        onClick={golfClubId => setSelectedGolfClubId(golfClubId)}
+        selectedGolfClubId={selectedGolfClubId}
       />
     </SimpleGrid>
   )

@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 const useLoading = () => {
   const [isLoading, setLoading] = useState(false)
+  const [neverLoaded, setNeverLoaded] = useState(true)
 
   function startLoading() {
     setLoading(true)
@@ -9,6 +10,7 @@ const useLoading = () => {
 
   function stopLoading() {
     setLoading(false)
+    setNeverLoaded(false)
   }
 
   function suspense(notLoadingJSX, loadingJSX) {
@@ -21,6 +23,7 @@ const useLoading = () => {
     startLoading,
     stopLoading,
     suspense,
+    neverLoaded,
   }
 }
 

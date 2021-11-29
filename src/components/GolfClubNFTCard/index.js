@@ -11,9 +11,11 @@ import {
 } from 'contracts/GolfClub'
 
 const Item = styled.div`
+  cursor: pointer;
   position: relative;
-  width: ${({ width = '15.6%' }) => width};
+  width: ${({ width = '100%' }) => width};
   padding: 1%;
+  transform: ${({ selected }) => (selected ? 'scale(1.1)' : 'scale(1)')};
 
   text-align: center;
 
@@ -23,7 +25,7 @@ const Item = styled.div`
     overflow: hidden;
     padding: 20px 50px;
     background-color: ${({ background }) => background};
-    border: ${({ background }) => `2px solid ${darken('0.3', background)}`};
+    border: ${({ background }) => `4px solid ${darken('0.3', background)}`};
   }
 
   .action-button {
@@ -124,17 +126,39 @@ const SecondsToPlay = styled.div`
   bottom: 0px;
   height: 5px;
   width: 100%;
-  background-color: #ccc;
-  border-radius: 10px;
+  background-color: ${({ background }) => darken('0.3', background)};
   &:before {
     position: absolute;
-    border-radius: 10px;
     left: 0px;
     bottom: 0px;
     content: '';
     width: ${({ percentWidth }) => percentWidth};
     height: 5px;
     background-color: #cdff8d;
+  }
+
+  .hidden-text {
+    font-size: 10px;
+    text-align: center;
+    color: #222;
+    font-weight: bold;
+    position: relative;
+    z-index: 2;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+    text-shadow: none;
+  }
+
+  &:hover {
+    height: 12px;
+    &:before {
+      height: 12px;
+    }
+    .hidden-text {
+      visibility: visible;
+      opacity: 1;
+    }
   }
 `
 
@@ -145,16 +169,22 @@ const GolfClubNFTCard = ({
   buttonText,
   selected,
   blockButtonIfNotReady = false,
+  clickOnCard,
 }) => {
   const readyTime = moment.utc(golfClub.secondsToPlay * 1000).format('HH:mm:ss')
   const canPlay = golfClub.secondsToPlay <= 0
+  const canPlayText = canPlay ? 'Ready!' : `Next game: ${readyTime}`
   const blockButton = blockButtonIfNotReady && !canPlay
+  const background = getBackgroundByRarity(golfClub.rarity)
+  const clickOnCardFunc =
+    typeof clickOnCard === 'function' ? clickOnCard : () => {}
 
   return (
     <Item
-      background={getBackgroundByRarity(golfClub.rarity)}
+      background={background}
       width={width}
       selected={selected}
+      onClick={clickOnCardFunc}
     >
       <div className="card">
         <img
@@ -162,10 +192,8 @@ const GolfClubNFTCard = ({
           style={{ width: '100%' }}
           alt={golfClub.name}
         />
-        <Level background={getBackgroundByRarity(golfClub.rarity)}>
-          {golfClub.level}
-        </Level>
-        <Attributes background={getBackgroundByRarity(golfClub.rarity)}>
+        <Level background={background}>{golfClub.level}</Level>
+        <Attributes background={background}>
           <div className="perk">
             <label>Perk</label>
             {getPerkByType(golfClub.playType)}
@@ -179,10 +207,16 @@ const GolfClubNFTCard = ({
             <div className="name">{golfClub.name}</div>
           </div>
           <SecondsToPlay
-            percentWidth={`${getSecondsToPlayPercentage(
-              golfClub.secondsToPlay,
-            )}px`}
-          />
+            percentWidth={
+              canPlay
+                ? '100%'
+                : `${getSecondsToPlayPercentage(golfClub.secondsToPlay)}%`
+            }
+            background={background}
+            title={canPlayText}
+          >
+            <div className="hidden-text">{canPlayText}</div>
+          </SecondsToPlay>
         </Attributes>
       </div>
       <div>
@@ -191,7 +225,6 @@ const GolfClubNFTCard = ({
             style={{ width: 'auto', marginTop: '15px', padding: '5px' }}
             onClick={blockButton ? () => {} : () => onClick(golfClub.id)}
             disabled={blockButton}
-            title={blockButton ? `Next game: ${readyTime}` : ''}
             className="action-button"
           >
             {buttonText}

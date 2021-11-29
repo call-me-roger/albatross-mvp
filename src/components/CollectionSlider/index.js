@@ -8,12 +8,16 @@ import { ButtonPrimary } from 'components/Button'
 
 const Game = styled.div`
   width: 90vw;
+  .slick-active {
+    padding: 15px 15px;
+  }
 `
 const CollectionSlider = ({
   collection,
   isLoading,
+  neverLoaded,
   onClick,
-  selectedGolfClub,
+  selectedGolfClubId,
 }) => {
   const [onlyReady, setOnlyReady] = useState(true)
   const slider = useRef(null)
@@ -41,11 +45,6 @@ const CollectionSlider = ({
   return (
     <Flex justifyContent="center">
       <Game>
-        {isLoading && (
-          <center>
-            <SimpleLoader />
-          </center>
-        )}
         <ButtonPrimary
           onClick={toggleShow}
           style={{ width: '100px', padding: '2px', margin: '10px 0px' }}
@@ -59,22 +58,48 @@ const CollectionSlider = ({
             The cooldown is 24h.
           </h4>
         )}
-        <Slider {...settings} ref={ref => (slider.current = ref)}>
-          {filtered?.map(golfClub => {
-            const isSelected = selectedGolfClub === golfClub.id
-            return (
-              <GolfClubNFTCard
-                key={golfClub.id}
-                golfClub={golfClub}
-                onClick={() => onClick(golfClub.id)}
-                width="100%"
-                buttonText={isSelected ? 'Selected' : 'Select'}
-                selected={isSelected}
-                blockButtonIfNotReady
-              />
-            )
-          })}
-        </Slider>
+        <Flex
+          style={{
+            backgroundColor: neverLoaded ? '#333' : 'transparent',
+            minHeight: '300px',
+            minWidth: '100%',
+            borderRadius: '15px',
+          }}
+          justifyContent="center"
+          alignItems="center"
+          flexDirection="column"
+        >
+          {isLoading && (
+            <div align="center">
+              <h4>Loading collection...</h4>
+              <SimpleLoader />
+            </div>
+          )}
+          <div style={{ width: '100%' }}>
+            <Slider {...settings} ref={ref => (slider.current = ref)}>
+              {filtered?.map(golfClub => {
+                const isSelected = selectedGolfClubId === golfClub.id
+                const canPlay = golfClub.secondsToPlay <= 0
+
+                return (
+                  <GolfClubNFTCard
+                    key={golfClub.id}
+                    golfClub={golfClub}
+                    clickOnCard={
+                      canPlay ? () => onClick(golfClub.id) : () => {}
+                    }
+                    onClick={() => onClick(golfClub.id)}
+                    width="100%"
+                    buttonText={isSelected ? 'Selected' : 'Select'}
+                    selected={isSelected}
+                    blockButtonIfNotReady
+                    style={{ cursor: 'pointer' }}
+                  />
+                )
+              })}
+            </Slider>
+          </div>
+        </Flex>
       </Game>
     </Flex>
   )
