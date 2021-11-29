@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import Slider from 'react-slick'
 import { Flex } from 'rebass'
-import GolfClubNFTCard from 'components/GolfClubNFTCard'
+import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
 import { ButtonPrimary } from 'components/Button'
 
 const Game = styled.div`
@@ -82,13 +82,13 @@ const CollectionSlider = ({
                 const canPlay = golfClub.secondsToPlay <= 0
 
                 return (
-                  <GolfClubNFTCard
+                  <GolfClubNFTInteractiveCard
                     key={golfClub.id}
                     golfClub={golfClub}
                     clickOnCard={
                       canPlay ? () => onClick(golfClub.id) : () => {}
                     }
-                    onClick={() => onClick(golfClub.id)}
+                    onClickButton={() => onClick(golfClub.id)}
                     width="100%"
                     buttonText={isSelected ? 'Selected' : 'Select'}
                     selected={isSelected}

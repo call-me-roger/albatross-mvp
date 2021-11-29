@@ -4,11 +4,10 @@ import useLoading from 'hooks/useLoading'
 import { SimpleGrid } from 'pages/Template/styles'
 import SimpleLoader from 'components/SimpleLoader'
 import NoGolfClubMessage from 'components/NoGolfClubMessage'
-import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
+import GolfClubNFTCard from 'components/GolfClubNFTCard'
 import { getCollection } from 'contracts/GolfClub'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
 import ClaimRewards from 'components/ClaimRewards'
-import { useHistory } from 'react-router'
 
 const Display = styled.div`
   padding: 15px;
@@ -20,7 +19,6 @@ const Display = styled.div`
 const Dashboard = () => {
   const [collection, setCollection] = useState([])
   const { isLoading, startLoading, stopLoading } = useLoading()
-  const history = useHistory()
 
   async function refreshCollection() {
     startLoading()
@@ -40,19 +38,15 @@ const Dashboard = () => {
   return (
     <SimpleGrid>
       <center>
-        <h1>Your Golf Club Collection</h1>
+        <h1>Marketplace</h1>
         <ClaimRewards refreshCollection={refreshCollection} />
         {isLoading && <SimpleLoader />}
-        <NoGolfClubMessage
-          isLoading={isLoading}
-          collection={collection}
-          onClick={() => history.push('/')}
-        />
+        <NoGolfClubMessage isLoading={isLoading} collection={collection} />
       </center>
       <Display>
         {collection.map(golfClub => {
           return (
-            <GolfClubNFTInteractiveCard
+            <GolfClubNFTCard
               key={golfClub.id}
               golfClub={golfClub}
               onClickButton={() => alert('Cooming soon!')}

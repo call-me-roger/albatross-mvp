@@ -535,19 +535,6 @@ const SOL_ABI = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'resetMaxDurability',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: 'from',
         type: 'address',
@@ -838,7 +825,6 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function playerRounds(address, uint256) view returns (uint256 id, uint16 bonusPerkType, uint16 hole, bool victory)',
   'function renounceOwnership()',
   'function resetCooldown(uint256 _golfClubId) payable',
-  'function resetMaxDurability(uint256 _golfClubId) payable',
   'function safeTransferFrom(address from, address to, uint256 tokenId)',
   'function safeTransferFrom(address from, address to, uint256 tokenId, bytes _data)',
   'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',

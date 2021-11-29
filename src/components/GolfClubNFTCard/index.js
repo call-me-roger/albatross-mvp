@@ -1,8 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 import styled from 'styled-components'
-import { ButtonPrimary } from 'components/Button'
-import { darken } from 'polished'
+import { darken, lighten } from 'polished'
 import {
   getBackgroundByRarity,
   getPerkByType,
@@ -14,18 +13,19 @@ const Item = styled.div`
   cursor: pointer;
   position: relative;
   width: ${({ width = '100%' }) => width};
-  padding: 1%;
+  padding: 4px;
+  border-radius: 15px;
   transform: ${({ selected }) => (selected ? 'scale(1.1)' : 'scale(1)')};
+  background-color: ${({ background }) => lighten('0.3', background)};
 
   text-align: center;
 
   .card {
     position: relative;
-    border-radius: 10px;
+    border-radius: 15px;
     overflow: hidden;
     padding: 20px 50px;
     background-color: ${({ background }) => background};
-    border: ${({ background }) => `4px solid ${darken('0.3', background)}`};
   }
 
   .action-button {
@@ -126,7 +126,6 @@ const SecondsToPlay = styled.div`
   bottom: 0px;
   height: 5px;
   width: 100%;
-  background-color: ${({ background }) => darken('0.3', background)};
   &:before {
     position: absolute;
     left: 0px;
@@ -162,29 +161,19 @@ const SecondsToPlay = styled.div`
   }
 `
 
-const GolfClubNFTCard = ({
-  golfClub,
-  onClick,
-  width,
-  buttonText,
-  selected,
-  blockButtonIfNotReady = false,
-  clickOnCard,
-}) => {
+const GolfClubNFTCard = ({ golfClub, width, selected, onClick }) => {
   const readyTime = moment.utc(golfClub.secondsToPlay * 1000).format('HH:mm:ss')
   const canPlay = golfClub.secondsToPlay <= 0
   const canPlayText = canPlay ? 'Ready!' : `Next game: ${readyTime}`
-  const blockButton = blockButtonIfNotReady && !canPlay
   const background = getBackgroundByRarity(golfClub.rarity)
-  const clickOnCardFunc =
-    typeof clickOnCard === 'function' ? clickOnCard : () => {}
+  const onClickFunc = typeof onClick === 'function' ? onClick : () => {}
 
   return (
     <Item
       background={background}
       width={width}
       selected={selected}
-      onClick={clickOnCardFunc}
+      onClick={onClickFunc}
     >
       <div className="card">
         <img
@@ -213,23 +202,10 @@ const GolfClubNFTCard = ({
                 : `${getSecondsToPlayPercentage(golfClub.secondsToPlay)}%`
             }
             background={background}
-            title={canPlayText}
           >
             <div className="hidden-text">{canPlayText}</div>
           </SecondsToPlay>
         </Attributes>
-      </div>
-      <div>
-        <center>
-          <ButtonPrimary
-            style={{ width: 'auto', marginTop: '15px', padding: '5px' }}
-            onClick={blockButton ? () => {} : () => onClick(golfClub.id)}
-            disabled={blockButton}
-            className="action-button"
-          >
-            {buttonText}
-          </ButtonPrimary>
-        </center>
       </div>
     </Item>
   )

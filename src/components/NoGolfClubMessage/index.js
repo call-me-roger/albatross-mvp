@@ -1,20 +1,23 @@
 import React from 'react'
 import { ButtonPrimary } from 'components/Button'
-import { useHistory } from 'react-router'
 
-const NoGolfClubMessage = ({ isLoading, collection }) => {
-  const history = useHistory()
-
+const NoGolfClubMessage = ({
+  isLoading,
+  collection,
+  text = 'You have 0 Golf Clubs in your wallet.',
+  buttonText = 'Mint your first one here!',
+  onClick,
+}) => {
   return (
     !isLoading &&
     collection.length === 0 && (
       <>
-        <h5>You have 0 Golf Clubs in your wallet.</h5>
+        <h5>{text}</h5>
         <ButtonPrimary
           style={{ width: 'auto' }}
-          onClick={() => history.push('/')}
+          onClick={typeof onClick === 'function' ? onClick : () => {}}
         >
-          Mint your first one here!
+          {buttonText}
         </ButtonPrimary>
       </>
     )
