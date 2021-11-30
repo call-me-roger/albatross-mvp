@@ -156,7 +156,9 @@ const Title = styled.a`
   justify-self: flex-start;
   margin-right: 12px;
   text-decoration: none;
-  font-size: 24px;
+  font-size: 28px;
+  white-space: nowrap;
+  font-family: 'Satisfy', cursive;
   color: ${({ theme }) => theme.text1};
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -243,7 +245,7 @@ function Header() {
   return (
     <HeaderFrame showBackground={scrollY > 45}>
       <HeaderRow>
-        <Title href=".">Meta Golf Club</Title>
+        <Title href=".">Albatross: The Golf Club</Title>
       </HeaderRow>
 
       {isLogged && (

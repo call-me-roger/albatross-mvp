@@ -1,30 +1,38 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { ButtonPrimary } from 'components/Button'
-import { CurrencyInputPanel } from 'components/CurrencyInputPanel'
 import { Flex } from 'rebass'
 import GolfClubNFTCard from 'components/GolfClubNFTCard'
+import { FormInputRow, SimpleInput } from 'components/Forms/inputs'
+import { ethers } from 'ethers'
 
 const Modal = styled.div`
   width: 300px;
 `
 
-const SellNFTModal = ({ onConfirm, onCancel, golfClub }) => {
-  const [price, setPrice] = useState('')
+const TransferNFTModal = ({ onConfirm, onCancel, golfClub }) => {
+  const [address, setAddress] = useState('')
 
   function handleConfirm() {
-    onConfirm(price)
+    onConfirm(address)
   }
+
+  const invalidAddress = !ethers.utils.isAddress(address)
 
   return (
     <Modal style={{ minWidth: '500px !important' }}>
-      <h2>SELL NFT</h2>
+      <h2>TRANSFER NFT</h2>
       <GolfClubNFTCard golfClub={golfClub} />
-      <h4 style={{ marginBottom: '0px' }}>Price</h4>
-      <CurrencyInputPanel
-        value={price}
-        onUserInput={newValue => setPrice(newValue)}
-      />
+      <h4 style={{ marginBottom: '0px' }}>To Address</h4>
+      <FormInputRow error={address && invalidAddress} success={!invalidAddress}>
+        <SimpleInput
+          value={address}
+          onChange={e => setAddress(e.target.value)}
+          fontSize="10px"
+          tabIndex="2"
+          style={{ textAlign: 'right' }}
+        />
+      </FormInputRow>
       <Flex style={{ gap: '15px' }}>
         <ButtonPrimary
           onClick={onCancel}
@@ -41,4 +49,4 @@ const SellNFTModal = ({ onConfirm, onCancel, golfClub }) => {
   )
 }
 
-export default SellNFTModal
+export default TransferNFTModal

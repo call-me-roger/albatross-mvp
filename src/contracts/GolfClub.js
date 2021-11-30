@@ -827,7 +827,6 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function renounceOwnership()',
   'function resetCooldown(uint256 _golfClubId) payable',
   'function safeTransferFrom(address from, address to, uint256 tokenId)',
-  'function safeTransferFrom(address from, address to, uint256 tokenId, bytes _data)',
   'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
   'function sendEthFromContract(address _to, uint256 _amount)',
   'function sendEthToContract() payable',
@@ -864,7 +863,7 @@ export function convertABI() {
 
   return newABI.format()
 }
-//console.log(convertABI())
+//console.log(convertABI()) // Don't forget to delete duplicated safeTransferFrom, only the first function safeTransferFrom is needed
 
 export const getPerkByType = _type => {
   if (Number(_type) === 100) return 'Long'
@@ -891,12 +890,11 @@ export async function mint(
       const sent = await contract.mint(address, _quantity, {
         value: ethers.utils.parseEther(getMintValueByQty(_quantity)),
       })
-      if (typeof onSendTransaction === 'function')
-        onSendTransaction({ result: sent })
+      _callback(onSendTransaction, { tx: sent })
       await sent.wait(1)
-      if (typeof onSuccess === 'function') onSuccess({ result: sent })
-    } catch (error) {
-      if (typeof onError === 'function') onError({ error })
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
     }
   }
 }
@@ -936,6 +934,30 @@ export async function getCollection() {
     }
   }
   return result
+}
+
+export async function transferNFT(
+  _toAddress,
+  _golfClubId,
+  { onSend, onSuccess, onError },
+) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getNFTSignedContract(signer)
+      const sent = await contract.safeTransferFrom(
+        address,
+        _toAddress,
+        _golfClubId,
+      )
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+    }
+  }
 }
 
 export async function getRounds() {

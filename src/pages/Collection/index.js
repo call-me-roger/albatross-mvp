@@ -5,15 +5,17 @@ import { SimpleGrid } from 'pages/Template/styles'
 import SimpleLoader from 'components/SimpleLoader'
 import NoGolfClubMessage from 'components/NoGolfClubMessage'
 import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
-import { getCollection } from 'contracts/GolfClub'
+import { getCollection, transferNFT } from 'contracts/GolfClub'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
 import ClaimRewards from 'components/ClaimRewards'
 import SellNFTModal from 'components/SellNFTModal'
 import { useHistory } from 'react-router'
-import { MARKETPLACE_SELL } from 'store/application/types'
+import { MARKETPLACE_SELL, TRANSFER_NFT } from 'store/application/types'
 import { sellNFT } from 'contracts/Marketplace'
 import { useApplicationState } from 'store/application/state'
 import { ButtonPrimary } from 'components/Button'
+import TransferNFTModal from 'components/TransferNFTModal'
+import { DollarSign, Send } from 'react-feather'
 
 const Display = styled.div`
   padding: 15px;
@@ -43,8 +45,8 @@ const Dashboard = () => {
     // eslint-disable-next-line
   }, [])
 
-  function waitingUser() {
-    openPopup(MARKETPLACE_SELL, () => (
+  function waitingUser(TYPE) {
+    openPopup(TYPE, () => (
       <div align="center">
         <h3>Waiting user to approve the transaction...</h3>
         <SimpleLoader />
@@ -52,8 +54,8 @@ const Dashboard = () => {
     ))
   }
 
-  function onSendTx() {
-    openPopup(MARKETPLACE_SELL, () => (
+  function onSendTx(TYPE) {
+    openPopup(TYPE, () => (
       <div align="center">
         <h3>Transaction sent. </h3>
         <h4>Waiting block confirmations...</h4>
@@ -62,26 +64,27 @@ const Dashboard = () => {
     ))
   }
 
-  function nftListedEffect() {
-    openPopup(MARKETPLACE_SELL, () => (
+  function successPopup(TYPE, text) {
+    refreshCollection()
+    openPopup(TYPE, () => (
       <div align="center">
-        <h3>NFT listed on the marketplace</h3>
-        <ButtonPrimary onClick={() => closePopup(MARKETPLACE_SELL)}>
+        <h3>{text}</h3>
+        <ButtonPrimary onClick={() => closePopup(TYPE)}>
           Continue...
         </ButtonPrimary>
       </div>
     ))
   }
 
-  function listingError(err) {
-    openPopup(MARKETPLACE_SELL, () => (
+  function errorPopup(TYPE, errorText, err) {
+    openPopup(TYPE, () => (
       <div>
         <h3>Error trying to list NFT.</h3>
         <pre>{err?.data?.message}</pre>
         <ButtonPrimary
           onClick={() => {
             refreshCollection()
-            closePopup(MARKETPLACE_SELL)
+            closePopup(TYPE)
           }}
           style={{ width: '150px' }}
         >
@@ -91,20 +94,52 @@ const Dashboard = () => {
     ))
   }
 
-  function handleSellNFT(_golfClubId) {
-    openPopup(MARKETPLACE_SELL, () => (
-      <SellNFTModal
-        onConfirm={_newPrice => {
-          waitingUser()
-          sellNFT(_golfClubId, _newPrice, {
-            onSend: onSendTx,
-            onSuccess: nftListedEffect,
-            onError: listingError,
-          })
-        }}
-        onCancel={() => closePopup(MARKETPLACE_SELL)}
-      />
-    ))
+  function handleSellNFT(_golfClub) {
+    if (_golfClub?.id) {
+      openPopup(MARKETPLACE_SELL, () => (
+        <SellNFTModal
+          onConfirm={_newPrice => {
+            waitingUser(MARKETPLACE_SELL)
+            sellNFT(_golfClub.id, _newPrice, {
+              onSend: () => onSendTx(MARKETPLACE_SELL),
+              onSuccess: () =>
+                successPopup(MARKETPLACE_SELL, 'NFT listed on the marketplace'),
+              onError: err =>
+                errorPopup(MARKETPLACE_SELL, 'Error trying to list NFT.', err),
+            })
+          }}
+          onCancel={() => closePopup(MARKETPLACE_SELL)}
+          golfClub={_golfClub}
+        />
+      ))
+    }
+  }
+
+  function handleTransferNFT(_golfClub) {
+    if (_golfClub?.id) {
+      openPopup(TRANSFER_NFT, () => (
+        <TransferNFTModal
+          onConfirm={_toAddress => {
+            waitingUser(TRANSFER_NFT)
+            transferNFT(_toAddress, _golfClub.id, {
+              onSend: () => onSendTx(TRANSFER_NFT),
+              onSuccess: () =>
+                successPopup(
+                  TRANSFER_NFT,
+                  <>
+                    NFT transfered to address: <br />
+                    {_toAddress}
+                  </>,
+                ),
+              onError: err =>
+                errorPopup(TRANSFER_NFT, 'Error trying to transfer NFT.', err),
+            })
+          }}
+          onCancel={() => closePopup(TRANSFER_NFT)}
+          golfClub={_golfClub}
+        />
+      ))
+    }
   }
 
   return (
@@ -125,8 +160,18 @@ const Dashboard = () => {
             <GolfClubNFTInteractiveCard
               key={golfClub.id}
               golfClub={golfClub}
-              onClickButton={() => handleSellNFT(golfClub.id)}
-              buttonText="Transfer/Sell"
+              onClickButton={() => handleSellNFT(golfClub)}
+              onClickSecondaryButton={() => handleTransferNFT(golfClub)}
+              secondaryButtonText={
+                <>
+                  <Send size="15px" style={{ marginRight: '5px' }} /> Transfer
+                </>
+              }
+              buttonText={
+                <>
+                  <DollarSign size="15px" style={{ marginRight: '5px' }} /> Sell
+                </>
+              }
               width="15.6%"
             />
           )
