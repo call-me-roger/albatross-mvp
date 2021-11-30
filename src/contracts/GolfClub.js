@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { ruleOfThree } from 'utils/MathUtils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
-  '0x8b16352E164e5e2a0D7d565802805770aB05a2bF'
+  '0xE6FF9aE431AD542956F78653c7535e03F56CB153'
 const SOL_ABI = [
   {
     anonymous: false,
@@ -842,7 +842,7 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function victories(address) view returns (uint256)',
 ]
 
-function getSignedContract(signer) {
+function getNFTSignedContract(signer) {
   return new ethers.Contract(
     GOLF_CLUB_CONTRACT_ADDRESS,
     GOLF_CLUB_CONTRACT_ABI,
@@ -850,7 +850,7 @@ function getSignedContract(signer) {
   )
 }
 
-function getReadContract() {
+export function getNFTReadContract() {
   return new ethers.Contract(
     GOLF_CLUB_CONTRACT_ADDRESS,
     GOLF_CLUB_CONTRACT_ABI,
@@ -886,7 +886,7 @@ export async function mint(
   const address = await signer.getAddress()
   if (address) {
     try {
-      const contract = getSignedContract(signer)
+      const contract = getNFTSignedContract(signer)
       const sent = await contract.mint(address, _quantity, {
         value: ethers.utils.parseEther(getMintValueByQty(_quantity)),
       })
@@ -900,26 +900,30 @@ export async function mint(
   }
 }
 
+export async function getNFTDetails(contract, _golfClubId) {
+  const nftDetails = await contract.golf_clubs(_golfClubId)
+  const secondsToPlay = await contract.secondsToPlay(_golfClubId)
+  return {
+    ...nftDetails,
+    id: _golfClubId,
+    dna: nftDetails.dna.toString(),
+    secondsToPlay: secondsToPlay.toNumber(),
+    tokenURI: await contract.tokenURI(_golfClubId),
+  }
+}
+
 export async function getCollection() {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   const result = []
   if (address) {
     try {
-      const contract = getReadContract()
+      const contract = getNFTReadContract()
       const collection = await contract.getCollectionByOwner(address)
       await Promise.all(
         collection.map(async bigNumberTokenId => {
           const tokenId = bigNumberTokenId.toString()
-          const nftDetails = await contract.golf_clubs(tokenId)
-          const secondsToPlay = await contract.secondsToPlay(tokenId)
-          result.push({
-            ...nftDetails,
-            id: tokenId,
-            dna: nftDetails.dna.toString(),
-            secondsToPlay: secondsToPlay.toNumber(),
-            tokenURI: await contract.tokenURI(tokenId),
-          })
+          result.push(await getNFTDetails(contract, tokenId))
         }),
       )
     } catch (err) {
@@ -940,7 +944,7 @@ export async function getRounds() {
 
   if (address) {
     try {
-      const contract = getReadContract()
+      const contract = getNFTReadContract()
       const getRounds = await contract.totalRounds(address)
       const totalRounds = getRounds.toNumber()
 
@@ -968,7 +972,7 @@ export async function findGame(callback) {
   const gameFeePrice = '0.015'
   if (address) {
     try {
-      const contract = getSignedContract(signer)
+      const contract = getNFTSignedContract(signer)
       const sent = await contract.findGame({
         value: ethers.utils.parseEther(gameFeePrice),
       })
@@ -988,7 +992,7 @@ export async function playGame(_golfClubId, callback) {
   const result = []
   if (address) {
     try {
-      const contract = getSignedContract(signer)
+      const contract = getNFTSignedContract(signer)
       const sent = await contract.playRound(_golfClubId)
       await sent.wait(1)
       if (typeof callback === 'function') callback()
@@ -1004,7 +1008,7 @@ export async function listenRoundPlayed(callback) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   if (address) {
-    const contract = getReadContract()
+    const contract = getNFTReadContract()
     contract.on(
       'RoundPlayed',
       (_golfClubId, _matchResult, _roundId, _owner) => {
@@ -1026,12 +1030,11 @@ export async function getClaimBalance() {
   const address = await signer.getAddress()
   if (address) {
     try {
-      const contract = getSignedContract(signer)
+      const contract = getNFTSignedContract(signer)
       const result = await contract.claimBalance(address)
       return ethers.utils.formatEther(result)
     } catch (err) {
-      console.log({ err })
-      alert('Error trying to play. Try again!')
+      console.log({ err }, 'Error getting claim balance. Try again!')
     }
   }
 }
@@ -1041,7 +1044,7 @@ export async function claimRewards(callback) {
   const address = await signer.getAddress()
   if (address) {
     try {
-      const contract = getSignedContract(signer)
+      const contract = getNFTSignedContract(signer)
       const result = await contract.claimRewards()
       await result.wait(1)
       if (typeof callback === 'function') callback()
