@@ -1,11 +1,11 @@
 import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
-import { getNFTDetails } from './GolfClub'
+import { getNFTDetails, getNFTSignedContract } from './GolfClub'
 import { getNFTReadContract } from './GolfClub'
-import { _callback } from './utils'
+import { convertABI, _callback } from './utils'
 
 const MARKETPLACE_CONTRACT_ADDRESS =
-  '0x2E0c050459aea0d5767E1007ad00d714BB899Ba6'
+  '0xE40FE0f1342F6248A77cB7199Cb8580456a6A349'
 const SOL_MARKETPLACE_ABI = [
   {
     anonymous: false,
@@ -89,25 +89,6 @@ const SOL_MARKETPLACE_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    name: 'claimBalance',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [],
     name: 'claimOwnerBalance',
     outputs: [],
@@ -120,6 +101,19 @@ const SOL_MARKETPLACE_ABI = [
     outputs: [
       {
         internalType: 'contract GolfClubNFT',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'golfClubContractAddress',
+    outputs: [
+      {
+        internalType: 'address',
         name: '',
         type: 'address',
       },
@@ -178,11 +172,6 @@ const SOL_MARKETPLACE_ABI = [
         internalType: 'address',
         name: 'seller',
         type: 'address',
-      },
-      {
-        internalType: 'bool',
-        name: 'active',
-        type: 'bool',
       },
     ],
     stateMutability: 'view',
@@ -286,12 +275,12 @@ const MARKETPLACE_ABI = [
   'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',
   'function addListing(uint256 _golfClubId, uint256 _price)',
   'function cancelListing(uint256 _golfClubId)',
-  'function claimBalance(address) view returns (uint256)',
   'function claimOwnerBalance()',
   'function getToken() view returns (address)',
+  'function golfClubContractAddress() view returns (address)',
   'function isOwner() view returns (bool)',
   'function listingIndexToToken(uint256) view returns (uint256)',
-  'function listings(uint256) view returns (uint256 price, address seller, bool active)',
+  'function listings(uint256) view returns (uint256 price, address seller)',
   'function listingsBalance(address) view returns (uint256)',
   'function nextListingId() view returns (uint256)',
   'function owner() view returns (address)',
@@ -301,12 +290,10 @@ const MARKETPLACE_ABI = [
   'function transferOwnership(address newOwner)',
 ]
 
-export function convertABI() {
-  const newABI = new ethers.utils.Interface(SOL_MARKETPLACE_ABI)
-
-  return newABI.format()
+export function log() {
+  console.log(convertABI(SOL_MARKETPLACE_ABI))
 }
-//console.log('marketplaceABI', convertABI())
+//log()
 
 export function getSignedContractMarketplace(signer) {
   return new ethers.Contract(
@@ -355,7 +342,8 @@ export async function getListedTokens() {
   await Promise.all(
     listedTokenIds.map(async tokenId => {
       const listedData = await contract.listings(tokenId)
-      if (listedData?.active) {
+      const listedToSale = await nftContract.listedToSale(tokenId)
+      if (listedToSale) {
         const nftData = await getNFTDetails(nftContract, tokenId)
         result.push({
           listing: {
@@ -433,6 +421,74 @@ export async function cancelListing(
     } catch (err) {
       _callback(onError, err)
       console.log({ err })
+    }
+  }
+}
+
+export async function isApprovedToSell() {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const nftContract = getNFTSignedContract(signer)
+      const isApproved = await nftContract.isApprovedForAll(
+        address,
+        MARKETPLACE_CONTRACT_ADDRESS,
+      )
+      return isApproved
+    } catch (err) {
+      console.log({ err })
+    }
+  }
+
+  return false
+}
+
+export async function approveMarketplace({ onSend, onSuccess, onError }) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const nftContract = getNFTSignedContract(signer)
+      const sent = await nftContract.setApprovalForAll(
+        MARKETPLACE_CONTRACT_ADDRESS,
+        true,
+      )
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+    }
+  }
+}
+
+export async function getClaimOwnerBalance() {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getSignedContractMarketplace(signer)
+      const result = await contract.listingsBalance(address)
+      return ethers.utils.formatEther(result)
+    } catch (err) {
+      console.log({ err }, 'Error getting claim balance. Try again!')
+    }
+  }
+}
+
+export async function claimOwnerBalance({ onSend, onSuccess, onError }) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getSignedContractMarketplace(signer)
+      const sent = await contract.claimOwnerBalance()
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
     }
   }
 }

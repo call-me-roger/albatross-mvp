@@ -1,11 +1,16 @@
 import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { ruleOfThree } from 'utils/MathUtils'
-import { _callback } from './utils'
+import { convertABI, _callback } from './utils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
-  '0xE6FF9aE431AD542956F78653c7535e03F56CB153'
-const SOL_ABI = [
+  '0x178B697E1335029b0cC6e869A763Af612deEf1Fb'
+const SOL_NFT_ABI = [
+  {
+    inputs: [],
+    stateMutability: 'nonpayable',
+    type: 'constructor',
+  },
   {
     anonymous: false,
     inputs: [
@@ -79,37 +84,6 @@ const SOL_ABI = [
     anonymous: false,
     inputs: [
       {
-        indexed: false,
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: '_matchResult',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: '_roundId',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'address',
-        name: '_owner',
-        type: 'address',
-      },
-    ],
-    name: 'RoundPlayed',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
         indexed: true,
         internalType: 'address',
         name: 'from',
@@ -130,6 +104,32 @@ const SOL_ABI = [
     ],
     name: 'Transfer',
     type: 'event',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'addGolfClubLoss',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'addGolfClubWin',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
   },
   {
     inputs: [
@@ -171,32 +171,6 @@ const SOL_ABI = [
   {
     inputs: [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    name: 'claimBalance',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'claimRewards',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'uint256',
         name: '_tokenId',
         type: 'uint256',
@@ -214,10 +188,48 @@ const SOL_ABI = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'findGame',
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'decreaseDurability',
     outputs: [],
-    stateMutability: 'payable',
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'durabilityDropRate',
+    outputs: [
+      {
+        internalType: 'uint8',
+        name: '',
+        type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'gameplayContractAddress',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -253,6 +265,25 @@ const SOL_ABI = [
         internalType: 'uint256[]',
         name: '',
         type: 'uint256[]',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_nonce',
+        type: 'uint256',
+      },
+    ],
+    name: 'getRandGolfClubType',
+    outputs: [
+      {
+        internalType: 'uint16',
+        name: '',
+        type: 'uint16',
       },
     ],
     stateMutability: 'view',
@@ -349,6 +380,38 @@ const SOL_ABI = [
   {
     inputs: [],
     name: 'isOwner',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'listTokenToSale',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'listedToSale',
     outputs: [
       {
         internalType: 'bool',
@@ -462,58 +525,6 @@ const SOL_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'playRound',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    name: 'playerRounds',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: 'id',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint16',
-        name: 'bonusPerkType',
-        type: 'uint16',
-      },
-      {
-        internalType: 'uint16',
-        name: 'hole',
-        type: 'uint16',
-      },
-      {
-        internalType: 'bool',
-        name: 'victory',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [],
     name: 'renounceOwnership',
     outputs: [],
@@ -537,6 +548,29 @@ const SOL_ABI = [
     inputs: [
       {
         internalType: 'address',
+        name: '_nftOwner',
+        type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_toAddress',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'safeOperatorTransfer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
         name: 'from',
         type: 'address',
       },
@@ -547,7 +581,7 @@ const SOL_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'tokenId',
+        name: '_golfClubId',
         type: 'uint256',
       },
     ],
@@ -570,7 +604,7 @@ const SOL_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'tokenId',
+        name: '_golfClubId',
         type: 'uint256',
       },
       {
@@ -606,31 +640,6 @@ const SOL_ABI = [
   {
     inputs: [
       {
-        internalType: 'address payable',
-        name: '_to',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '_amount',
-        type: 'uint256',
-      },
-    ],
-    name: 'sendEthFromContract',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'sendEthToContract',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: 'operator',
         type: 'address',
@@ -655,6 +664,19 @@ const SOL_ABI = [
       },
     ],
     name: 'setBaseURI',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_contractAddress',
+        type: 'address',
+      },
+    ],
+    name: 'setGameplayContract',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -714,25 +736,6 @@ const SOL_ABI = [
     inputs: [
       {
         internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    name: 'totalRounds',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
         name: 'from',
         type: 'address',
       },
@@ -773,6 +776,32 @@ const SOL_ABI = [
         type: 'uint256',
       },
     ],
+    name: 'triggerCooldown',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'unlistTokenToSale',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
     name: 'upgradeGolfClub',
     outputs: [],
     stateMutability: 'payable',
@@ -781,40 +810,46 @@ const SOL_ABI = [
   {
     inputs: [
       {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    name: 'victories',
-    outputs: [
-      {
         internalType: 'uint256',
         name: '',
         type: 'uint256',
+      },
+    ],
+    name: 'victoryProbability',
+    outputs: [
+      {
+        internalType: 'uint8',
+        name: '',
+        type: 'uint8',
       },
     ],
     stateMutability: 'view',
     type: 'function',
   },
 ]
+// Dont forget to remove the duplicated safeTransferFrom, only the first one is needed
 export const GOLF_CLUB_CONTRACT_ABI = [
+  'constructor()',
   'event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId)',
   'event ApprovalForAll(address indexed owner, address indexed operator, bool approved)',
   'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',
-  'event RoundPlayed(uint256 _golfClubId, uint256 _matchResult, uint256 _roundId, address _owner)',
   'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)',
+  'function addGolfClubLoss(uint256 _golfClubId)',
+  'function addGolfClubWin(uint256 _golfClubId)',
   'function approve(address to, uint256 tokenId)',
   'function balanceOf(address owner) view returns (uint256)',
-  'function claimBalance(address) view returns (uint256)',
-  'function claimRewards()',
   'function concatGolfClubName(uint256 _tokenId) pure returns (string)',
-  'function findGame() payable',
+  'function decreaseDurability(uint256 _golfClubId)',
+  'function durabilityDropRate(uint256) view returns (uint8)',
+  'function gameplayContractAddress() view returns (address)',
   'function getApproved(uint256 tokenId) view returns (address)',
   'function getCollectionByOwner(address _owner) view returns (uint256[])',
+  'function getRandGolfClubType(uint256 _nonce) view returns (uint16)',
   'function golf_clubs(uint256) view returns (uint256 id, uint256 dna, uint32 level, uint32 readyTime, uint16 durability, uint16 winCount, uint16 lossCount, uint16 playType, uint8 rarity, string name)',
   'function isApprovedForAll(address owner, address operator) view returns (bool)',
   'function isOwner() view returns (bool)',
+  'function listTokenToSale(uint256 _golfClubId)',
+  'function listedToSale(uint256) view returns (bool)',
   'function maxCollection() view returns (uint256)',
   'function maxMintPerWallet() view returns (uint256)',
   'function mint(address _to, uint256 _quantity) payable',
@@ -822,25 +857,29 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function nextTokenId() view returns (uint256)',
   'function owner() view returns (address)',
   'function ownerOf(uint256 tokenId) view returns (address)',
-  'function playRound(uint256 _golfClubId)',
-  'function playerRounds(address, uint256) view returns (uint256 id, uint16 bonusPerkType, uint16 hole, bool victory)',
   'function renounceOwnership()',
   'function resetCooldown(uint256 _golfClubId) payable',
-  'function safeTransferFrom(address from, address to, uint256 tokenId)',
+  'function safeOperatorTransfer(address _nftOwner, address _toAddress, uint256 _golfClubId)',
+  'function safeTransferFrom(address from, address to, uint256 _golfClubId)',
   'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
-  'function sendEthFromContract(address _to, uint256 _amount)',
-  'function sendEthToContract() payable',
   'function setApprovalForAll(address operator, bool approved)',
   'function setBaseURI(string _newBaseURI)',
+  'function setGameplayContract(address _contractAddress)',
   'function supportsInterface(bytes4 interfaceId) view returns (bool)',
   'function symbol() view returns (string)',
   'function tokenURI(uint256 _golfClubId) view returns (string)',
-  'function totalRounds(address) view returns (uint256)',
   'function transferFrom(address from, address to, uint256 tokenId)',
   'function transferOwnership(address newOwner)',
+  'function triggerCooldown(uint256 _golfClubId)',
+  'function unlistTokenToSale(uint256 _golfClubId)',
   'function upgradeGolfClub(uint256 _golfClubId) payable',
-  'function victories(address) view returns (uint256)',
+  'function victoryProbability(uint256) view returns (uint8)',
 ]
+
+export function log() {
+  console.log(convertABI(SOL_NFT_ABI))
+}
+//log()
 
 export function getNFTSignedContract(signer) {
   return new ethers.Contract(
@@ -857,13 +896,6 @@ export function getNFTReadContract() {
     provider,
   )
 }
-
-export function convertABI() {
-  const newABI = new ethers.utils.Interface(SOL_ABI)
-
-  return newABI.format()
-}
-//console.log(convertABI()) // Don't forget to delete duplicated safeTransferFrom, only the first function safeTransferFrom is needed
 
 export const getPerkByType = _type => {
   if (Number(_type) === 100) return 'Long'
@@ -960,126 +992,6 @@ export async function transferNFT(
   }
 }
 
-export async function getRounds() {
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  const result = []
-  let currentRoundIndex = -1
-
-  if (address) {
-    try {
-      const contract = getNFTReadContract()
-      const getRounds = await contract.totalRounds(address)
-      const totalRounds = getRounds.toNumber()
-
-      if (totalRounds > 0) {
-        for (let i = 0; i < totalRounds; i++) {
-          const round = await contract.playerRounds(address, i)
-          if (!round.victory && currentRoundIndex === -1) currentRoundIndex = i
-          result.push(round)
-        }
-      }
-    } catch (err) {
-      console.log({ err })
-      alert(
-        'Error getting owner collection. Connect your wallet or change the network!',
-      )
-    }
-  }
-  return { rounds: result, currentRoundIndex }
-}
-
-export async function findGame({ onSend, onSuccess, onError }) {
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  const result = []
-  const gameFeePrice = '0.015'
-  if (address) {
-    try {
-      const contract = getNFTSignedContract(signer)
-      const sent = await contract.findGame({
-        value: ethers.utils.parseEther(gameFeePrice),
-      })
-      _callback(onSend, { tx: sent })
-      await sent.wait(1)
-      _callback(onSuccess, { tx: sent })
-    } catch (err) {
-      console.log({ err })
-      _callback(onError, err)
-    }
-  }
-  return result
-}
-
-export async function playGame(_golfClubId, { onSend, onSuccess, onError }) {
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  const result = []
-  if (address) {
-    try {
-      const contract = getNFTSignedContract(signer)
-      const sent = await contract.playRound(_golfClubId)
-      _callback(onSend, { tx: sent })
-      await sent.wait(1)
-      _callback(onSuccess, { tx: sent })
-    } catch (err) {
-      _callback(onError, err)
-    }
-  }
-  return result
-}
-
-export async function listenRoundPlayed(callback) {
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  if (address) {
-    const contract = getNFTReadContract()
-    contract.on(
-      'RoundPlayed',
-      (_golfClubId, _matchResult, _roundId, _owner) => {
-        if (_owner === address) {
-          const result = {
-            _golfClubId: _golfClubId.toNumber(),
-            _matchResult: _matchResult.toNumber(),
-            _roundId: _roundId.toNumber(),
-          }
-          if (typeof callback === 'function') callback(result)
-        }
-      },
-    )
-  }
-}
-
-export async function getClaimBalance() {
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  if (address) {
-    try {
-      const contract = getNFTSignedContract(signer)
-      const result = await contract.claimBalance(address)
-      return ethers.utils.formatEther(result)
-    } catch (err) {
-      console.log({ err }, 'Error getting claim balance. Try again!')
-    }
-  }
-}
-
-export async function claimRewards(callback) {
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  if (address) {
-    try {
-      const contract = getNFTSignedContract(signer)
-      const result = await contract.claimRewards()
-      await result.wait(1)
-      if (typeof callback === 'function') callback()
-    } catch (err) {
-      console.log({ err })
-      alert('Error trying to claim rewards. Try again!')
-    }
-  }
-}
-
 export function getBackgroundByRarity(_rarity) {
   if (_rarity === 4) return '#bb9700'
   if (_rarity === 3) return '#be32f3'
@@ -1100,8 +1012,4 @@ export function getSecondsToPlayPercentage(_secondsToPlay) {
   const total24h = 86400
   const value = total24h - _secondsToPlay
   return ruleOfThree(total24h, value)
-}
-
-export function getTournamentNumberByRoundIndex(_roundIndex) {
-  return Math.ceil((((_roundIndex + 1) / 18) * 100) / 100)
 }

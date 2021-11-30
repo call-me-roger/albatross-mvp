@@ -1,50 +1,42 @@
 import React, { useEffect, useState } from 'react'
 import { Flex } from 'rebass'
 import { ButtonPrimary } from 'components/Button'
-import { claimRewards, getClaimBalance } from 'contracts/Gameplay'
+import { claimOwnerBalance, getClaimOwnerBalance } from 'contracts/Marketplace'
 import useCallbackPopups from 'hooks/useCallbackPopups'
-import { GAME_CLAIM_BALANCE } from 'store/application/types'
-import { useApplicationState } from 'store/application/state'
+import { MARKETPLACE_CLAIM_BALANCE } from 'store/application/types'
 
-const ClaimRewards = ({ refreshCollection }) => {
+const ClaimOwnerBalance = () => {
   const [claimBalance, setClaimBalance] = useState(0)
-  const { closePopup } = useApplicationState()
-  const { waitingUser, onSendTx, errorPopup, successPopup } =
+  const { waitingUser, onSendTx, successPopup, errorPopup } =
     useCallbackPopups()
 
-  async function refreshRewards() {
-    const resultClaimBalance = await getClaimBalance()
+  async function refreshBalance() {
+    const resultClaimBalance = await getClaimOwnerBalance()
     setClaimBalance(resultClaimBalance)
   }
 
   useEffect(() => {
-    refreshRewards()
+    refreshBalance()
   }, [])
 
-  function refreshRewardsAndCollection() {
-    closePopup(GAME_CLAIM_BALANCE)
-    refreshRewards()
-    if (typeof refreshCollection === 'function') refreshCollection()
-  }
-
   function handleClaimRewards() {
-    waitingUser(GAME_CLAIM_BALANCE)
-    claimRewards({
-      onSend: () => onSendTx(GAME_CLAIM_BALANCE),
+    waitingUser(MARKETPLACE_CLAIM_BALANCE)
+    claimOwnerBalance({
+      onSend: () => onSendTx(MARKETPLACE_CLAIM_BALANCE),
       onSuccess: () =>
         successPopup(
-          GAME_CLAIM_BALANCE,
+          MARKETPLACE_CLAIM_BALANCE,
           <div>
             <h3>Rewards added to your wallet</h3>
             <h4>All the claimed balance where sent to your wallet address.</h4>
           </div>,
-          refreshRewardsAndCollection,
+          refreshBalance,
         ),
-      onError: () =>
+      onError: err =>
         errorPopup(
-          GAME_CLAIM_BALANCE,
+          MARKETPLACE_CLAIM_BALANCE,
           'Error trying to claim balance.',
-          refreshRewardsAndCollection,
+          err,
         ),
     })
   }
@@ -53,7 +45,7 @@ const ClaimRewards = ({ refreshCollection }) => {
     <Flex justifyContent="center" alignItems="center">
       <div>
         <div>
-          <b>Rewards: {claimBalance}</b>
+          <b>Marketplace balance: {claimBalance}</b>
         </div>
       </div>
       <ButtonPrimary
@@ -67,4 +59,4 @@ const ClaimRewards = ({ refreshCollection }) => {
   )
 }
 
-export default ClaimRewards
+export default ClaimOwnerBalance

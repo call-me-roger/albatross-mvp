@@ -1,11 +1,11 @@
 import SimpleLoader from 'components/SimpleLoader'
 import {
   findGame,
-  getPerkByType,
   getRounds,
   getTournamentNumberByRoundIndex,
   playGame,
-} from 'contracts/GolfClub'
+} from 'contracts/Gameplay'
+import { getPerkByType } from 'contracts/GolfClub'
 import useLoading from 'hooks/useLoading'
 import React, { useEffect, useRef, useState } from 'react'
 import styled, { keyframes } from 'styled-components'
@@ -262,15 +262,22 @@ const GameSlider = ({
     centerPadding: '0px',
   }
   const currentTournament = getTournamentNumberByRoundIndex(displayRound)
+  const noRounds = !neverLoaded && rounds.length === 0
 
   return (
     <Flex justifyContent="center">
       <Game>
         <Flex justifyContent="space-between" alignItems="center">
           <div>
-            <h1>Tournament #{currentTournament}</h1>
+            {noRounds ? (
+              <h1>Find your first tournament</h1>
+            ) : (
+              <h1>Tournament #{currentTournament}</h1>
+            )}
           </div>
-          <ClaimRewards refreshCollection={refreshCollection} />
+          {!noRounds ? (
+            <ClaimRewards refreshCollection={refreshCollection} />
+          ) : null}
           <ButtonPrimary
             style={{ width: '200px', height: '40px' }}
             onClick={handleFindTournament}
@@ -295,6 +302,7 @@ const GameSlider = ({
               <SimpleLoader />
             </div>
           )}
+          {noRounds && <h4>No tournaments yet.</h4>}
           <SliderWrapper>
             <Slider
               {...settings}

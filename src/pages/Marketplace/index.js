@@ -5,12 +5,13 @@ import { SimpleGrid } from 'pages/Template/styles'
 import SimpleLoader from 'components/SimpleLoader'
 import NoGolfClubMessage from 'components/NoGolfClubMessage'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
-import ClaimRewards from 'components/ClaimRewards'
+import ClaimOwnerBalance from 'components/ClaimOwnerBalance'
 import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
 import { buyNFT, cancelListing, getListedTokens } from 'contracts/Marketplace'
 import { MARKETPLACE_BUY, MARKETPLACE_CANCEL } from 'store/application/types'
 import { ButtonPrimary } from 'components/Button'
 import { useApplicationState } from 'store/application/state'
+import { useHistory } from 'react-router'
 
 const Display = styled.div`
   padding: 15px;
@@ -23,12 +24,13 @@ const Dashboard = () => {
   const [collection, setCollection] = useState([])
   const { isLoading, startLoading, stopLoading } = useLoading()
   const { openPopup, closePopup } = useApplicationState()
+  const history = useHistory()
 
   async function refreshCollection() {
     startLoading()
     const newCollection = await getListedTokens()
     if (newCollection?.length > 0) {
-      const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
+      const ordered = orderArrayByObjAttr(newCollection, 'nft', 'id', true)
       setCollection(ordered)
     }
     stopLoading()
@@ -130,13 +132,14 @@ const Dashboard = () => {
     <SimpleGrid>
       <center>
         <h1>Marketplace</h1>
-        <ClaimRewards refreshCollection={refreshCollection} />
+        <ClaimOwnerBalance refreshCollection={refreshCollection} />
         {isLoading && <SimpleLoader />}
         <NoGolfClubMessage
           isLoading={isLoading}
           collection={collection}
           text="0 GolfClubs listed to sale!"
           buttonText="Sell my NFTs"
+          onClick={() => history.push('/collection')}
         />
       </center>
       <Display>

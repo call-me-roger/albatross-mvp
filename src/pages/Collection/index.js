@@ -10,12 +10,22 @@ import { orderArrayByObjAttr } from '../../utils/array/sort'
 import ClaimRewards from 'components/ClaimRewards'
 import SellNFTModal from 'components/SellNFTModal'
 import { useHistory } from 'react-router'
-import { MARKETPLACE_SELL, TRANSFER_NFT } from 'store/application/types'
-import { sellNFT } from 'contracts/Marketplace'
+import {
+  MARKETPLACE_APPROVE,
+  MARKETPLACE_SELL,
+  TRANSFER_NFT,
+} from 'store/application/types'
+import {
+  approveMarketplace,
+  isApprovedToSell,
+  sellNFT,
+} from 'contracts/Marketplace'
 import { useApplicationState } from 'store/application/state'
 import { ButtonPrimary } from 'components/Button'
 import TransferNFTModal from 'components/TransferNFTModal'
 import { DollarSign, Send } from 'react-feather'
+import { Flex } from 'rebass'
+import useCallbackPopups from 'hooks/useCallbackPopups'
 
 const Display = styled.div`
   padding: 15px;
@@ -28,6 +38,9 @@ const Dashboard = () => {
   const [collection, setCollection] = useState([])
   const { isLoading, startLoading, stopLoading } = useLoading()
   const { openPopup, closePopup } = useApplicationState()
+  const { waitingUser, onSendTx, successPopup, errorPopup } =
+    useCallbackPopups()
+  const [isApproved, setApproved] = useState(false)
   const history = useHistory()
 
   async function refreshCollection() {
@@ -38,61 +51,16 @@ const Dashboard = () => {
       setCollection(ordered)
     }
     stopLoading()
+    if (!isApproved) {
+      const approvedResult = await isApprovedToSell()
+      if (approvedResult) setApproved(approvedResult)
+    }
   }
 
   useEffect(() => {
     refreshCollection()
     // eslint-disable-next-line
   }, [])
-
-  function waitingUser(TYPE) {
-    openPopup(TYPE, () => (
-      <div align="center">
-        <h3>Waiting user to approve the transaction...</h3>
-        <SimpleLoader />
-      </div>
-    ))
-  }
-
-  function onSendTx(TYPE) {
-    openPopup(TYPE, () => (
-      <div align="center">
-        <h3>Transaction sent. </h3>
-        <h4>Waiting block confirmations...</h4>
-        <SimpleLoader />
-      </div>
-    ))
-  }
-
-  function successPopup(TYPE, text) {
-    refreshCollection()
-    openPopup(TYPE, () => (
-      <div align="center">
-        <h3>{text}</h3>
-        <ButtonPrimary onClick={() => closePopup(TYPE)}>
-          Continue...
-        </ButtonPrimary>
-      </div>
-    ))
-  }
-
-  function errorPopup(TYPE, errorText, err) {
-    openPopup(TYPE, () => (
-      <div>
-        <h3>Error trying to list NFT.</h3>
-        <pre>{err?.data?.message}</pre>
-        <ButtonPrimary
-          onClick={() => {
-            refreshCollection()
-            closePopup(TYPE)
-          }}
-          style={{ width: '150px' }}
-        >
-          Reload
-        </ButtonPrimary>
-      </div>
-    ))
-  }
 
   function handleSellNFT(_golfClub) {
     if (_golfClub?.id) {
@@ -103,9 +71,18 @@ const Dashboard = () => {
             sellNFT(_golfClub.id, _newPrice, {
               onSend: () => onSendTx(MARKETPLACE_SELL),
               onSuccess: () =>
-                successPopup(MARKETPLACE_SELL, 'NFT listed on the marketplace'),
+                successPopup(
+                  MARKETPLACE_SELL,
+                  <h3>NFT listed on the marketplace</h3>,
+                  refreshCollection,
+                ),
               onError: err =>
-                errorPopup(MARKETPLACE_SELL, 'Error trying to list NFT.', err),
+                errorPopup(
+                  MARKETPLACE_SELL,
+                  'Error trying to list NFT.',
+                  err,
+                  refreshCollection,
+                ),
             })
           }}
           onCancel={() => closePopup(MARKETPLACE_SELL)}
@@ -127,12 +104,18 @@ const Dashboard = () => {
                 successPopup(
                   TRANSFER_NFT,
                   <>
-                    NFT transfered to address: <br />
-                    {_toAddress}
+                    <h3>NFT transfered to address:</h3>
+                    <h4>{_toAddress}</h4>
                   </>,
+                  refreshCollection,
                 ),
               onError: err =>
-                errorPopup(TRANSFER_NFT, 'Error trying to transfer NFT.', err),
+                errorPopup(
+                  TRANSFER_NFT,
+                  'Error trying to transfer NFT.',
+                  err,
+                  refreshCollection,
+                ),
             })
           }}
           onCancel={() => closePopup(TRANSFER_NFT)}
@@ -142,12 +125,51 @@ const Dashboard = () => {
     }
   }
 
+  function handleApproveMarketplace() {
+    waitingUser(MARKETPLACE_APPROVE)
+    approveMarketplace({
+      onSend: () => {
+        onSendTx(MARKETPLACE_APPROVE)
+      },
+      onSuccess: () => {
+        successPopup(
+          MARKETPLACE_APPROVE,
+          <div>
+            <h3>Marketplace approved</h3>
+            <p>Now you can sell your NFTs on the marketplace.</p>
+          </div>,
+          refreshCollection,
+        )
+      },
+      onError: err => {
+        errorPopup(
+          MARKETPLACE_APPROVE,
+          'Error trying to approve marketplace.',
+          err,
+          refreshCollection,
+        )
+      },
+    })
+  }
+
   return (
     <SimpleGrid>
       <center>
-        <h1>Your Golf Club Collection</h1>
-        <ClaimRewards refreshCollection={refreshCollection} />
         {isLoading && <SimpleLoader />}
+        <Flex justifyContent="space-between" alignItems="center">
+          <h1 style={{ width: '33.3%' }}>Your Golf Club Collection</h1>
+          <ClaimRewards refreshCollection={refreshCollection} />
+          <div style={{ width: '33.3%' }}>
+            {!isApproved && (
+              <ButtonPrimary
+                style={{ width: '200px', marginTop: '15px', padding: '5px' }}
+                onClick={handleApproveMarketplace}
+              >
+                Approve marketplace
+              </ButtonPrimary>
+            )}
+          </div>
+        </Flex>
         <NoGolfClubMessage
           isLoading={isLoading}
           collection={collection}
@@ -168,10 +190,15 @@ const Dashboard = () => {
                 </>
               }
               buttonText={
-                <>
+                <font
+                  title={
+                    !isApproved && 'First approve the marketplace to sell NFTs.'
+                  }
+                >
                   <DollarSign size="15px" style={{ marginRight: '5px' }} /> Sell
-                </>
+                </font>
               }
+              blockPrimaryButton={!isApproved}
               width="15.6%"
             />
           )
