@@ -16,6 +16,7 @@ const GolfClubNFTInteractiveCard = ({
   buttonText,
   selected,
   blockButtonIfNotReady = false,
+  price,
 }) => {
   const canPlay = golfClub.secondsToPlay <= 0
   const blockButton = blockButtonIfNotReady && !canPlay
@@ -30,6 +31,7 @@ const GolfClubNFTInteractiveCard = ({
       />
       <div>
         <center>
+          <b>Price: {price}</b>
           <ButtonPrimary
             style={{ width: 'auto', marginTop: '15px', padding: '5px' }}
             onClick={blockButton ? () => {} : () => onClickButton(golfClub.id)}

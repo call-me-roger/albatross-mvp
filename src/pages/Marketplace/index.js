@@ -4,10 +4,10 @@ import useLoading from 'hooks/useLoading'
 import { SimpleGrid } from 'pages/Template/styles'
 import SimpleLoader from 'components/SimpleLoader'
 import NoGolfClubMessage from 'components/NoGolfClubMessage'
-import GolfClubNFTCard from 'components/GolfClubNFTCard'
-import { getCollection } from 'contracts/GolfClub'
 import { orderArrayByObjAttr } from '../../utils/array/sort'
 import ClaimRewards from 'components/ClaimRewards'
+import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
+import { getListedTokens } from 'contracts/Marketplace'
 
 const Display = styled.div`
   padding: 15px;
@@ -22,7 +22,7 @@ const Dashboard = () => {
 
   async function refreshCollection() {
     startLoading()
-    const newCollection = await getCollection()
+    const newCollection = await getListedTokens()
     if (newCollection?.length > 0) {
       const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
       setCollection(ordered)
@@ -41,16 +41,22 @@ const Dashboard = () => {
         <h1>Marketplace</h1>
         <ClaimRewards refreshCollection={refreshCollection} />
         {isLoading && <SimpleLoader />}
-        <NoGolfClubMessage isLoading={isLoading} collection={collection} />
+        <NoGolfClubMessage
+          isLoading={isLoading}
+          collection={collection}
+          text="0 GolfClubs listed to sale!"
+          buttonText="Sell my NFTs"
+        />
       </center>
       <Display>
-        {collection.map(golfClub => {
+        {collection.map(({ nft: golfClub, listing }) => {
           return (
-            <GolfClubNFTCard
+            <GolfClubNFTInteractiveCard
               key={golfClub.id}
               golfClub={golfClub}
               onClickButton={() => alert('Cooming soon!')}
-              buttonText="Transfer/Sell"
+              price={`${listing.price} DRC`}
+              buttonText="Buy"
               width="15.6%"
             />
           )
