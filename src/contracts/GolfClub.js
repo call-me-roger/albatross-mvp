@@ -1,6 +1,7 @@
 import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { ruleOfThree } from 'utils/MathUtils'
+import { _callback } from './utils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
   '0xE6FF9aE431AD542956F78653c7535e03F56CB153'
@@ -842,7 +843,7 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function victories(address) view returns (uint256)',
 ]
 
-function getNFTSignedContract(signer) {
+export function getNFTSignedContract(signer) {
   return new ethers.Contract(
     GOLF_CLUB_CONTRACT_ADDRESS,
     GOLF_CLUB_CONTRACT_ABI,
@@ -909,6 +910,7 @@ export async function getNFTDetails(contract, _golfClubId) {
     dna: nftDetails.dna.toString(),
     secondsToPlay: secondsToPlay.toNumber(),
     tokenURI: await contract.tokenURI(_golfClubId),
+    owner: await contract.ownerOf(_golfClubId),
   }
 }
 
@@ -965,7 +967,7 @@ export async function getRounds() {
   return { rounds: result, currentRoundIndex }
 }
 
-export async function findGame({ onStart, onSuccess, onError }) {
+export async function findGame({ onSend, onSuccess, onError }) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   const result = []
@@ -976,18 +978,18 @@ export async function findGame({ onStart, onSuccess, onError }) {
       const sent = await contract.findGame({
         value: ethers.utils.parseEther(gameFeePrice),
       })
-      if (typeof onSuccess === 'function') onStart()
+      _callback(onSend, { tx: sent })
       await sent.wait(1)
-      if (typeof onSuccess === 'function') onSuccess()
+      _callback(onSuccess, { tx: sent })
     } catch (err) {
       console.log({ err })
-      if (typeof onError === 'function') onError()
+      _callback(onError, err)
     }
   }
   return result
 }
 
-export async function playGame(_golfClubId, callback) {
+export async function playGame(_golfClubId, { onSend, onSuccess, onError }) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   const result = []
@@ -995,11 +997,11 @@ export async function playGame(_golfClubId, callback) {
     try {
       const contract = getNFTSignedContract(signer)
       const sent = await contract.playRound(_golfClubId)
+      _callback(onSend, { tx: sent })
       await sent.wait(1)
-      if (typeof callback === 'function') callback()
+      _callback(onSuccess, { tx: sent })
     } catch (err) {
-      console.log({ err })
-      alert('Error trying to play. Try again!')
+      _callback(onError, err)
     }
   }
   return result
@@ -1074,7 +1076,8 @@ export function getRarityTextByInt(_rarity) {
 
 export function getSecondsToPlayPercentage(_secondsToPlay) {
   const total24h = 86400
-  return ruleOfThree(total24h, _secondsToPlay)
+  const value = total24h - _secondsToPlay
+  return ruleOfThree(total24h, value)
 }
 
 export function getTournamentNumberByRoundIndex(_roundIndex) {

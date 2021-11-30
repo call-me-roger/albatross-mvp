@@ -2,6 +2,7 @@ import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { getNFTDetails } from './GolfClub'
 import { getNFTReadContract } from './GolfClub'
+import { _callback } from './utils'
 
 const MARKETPLACE_CONTRACT_ADDRESS =
   '0x2E0c050459aea0d5767E1007ad00d714BB899Ba6'
@@ -343,6 +344,9 @@ export async function getListings() {
 }
 
 export async function getListedTokens() {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+
   const listedTokenIds = await getListings()
   const result = []
   const contract = getReadContractMarketplace()
@@ -352,16 +356,83 @@ export async function getListedTokens() {
     listedTokenIds.map(async tokenId => {
       const listedData = await contract.listings(tokenId)
       if (listedData?.active) {
+        const nftData = await getNFTDetails(nftContract, tokenId)
         result.push({
           listing: {
             ...listedData,
             price: ethers.utils.formatEther(listedData.price),
           },
-          nft: await getNFTDetails(nftContract, tokenId),
+          nft: nftData,
+          isMine: nftData.owner === address,
         })
       }
     }),
   )
 
   return result
+}
+
+export async function buyNFT(
+  _golfClubId,
+  _price,
+  { onSend, onSuccess, onError },
+) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = await getSignedContractMarketplace(signer)
+      const sent = await contract.purchase(_golfClubId, {
+        value: ethers.utils.parseEther(_price),
+      })
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+      console.log({ err })
+    }
+  }
+}
+
+export async function sellNFT(
+  _golfClubId,
+  _price,
+  { onSend, onSuccess, onError },
+) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = await getSignedContractMarketplace(signer)
+      const _ethPrice = ethers.utils.parseEther(Number(_price).toString())
+      const sent = await contract.addListing(_golfClubId, _ethPrice)
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+      console.log({ err })
+    }
+  }
+}
+
+export async function cancelListing(
+  _golfClubId,
+  { onSend, onSuccess, onError },
+) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = await getSignedContractMarketplace(signer)
+      const sent = await contract.cancelListing(_golfClubId)
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+      console.log({ err })
+    }
+  }
 }

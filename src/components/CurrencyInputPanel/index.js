@@ -28,7 +28,7 @@ export function CurrencyInputPanel({
 }) {
   return (
     <FormInputRow error={error} success={success}>
-      <div style={{ width: '120px', padding: 0 }}>
+      <div style={{ width: 'auto', padding: 0 }}>
         <Aligner>{currency}</Aligner>
       </div>
       <NumericalInput
