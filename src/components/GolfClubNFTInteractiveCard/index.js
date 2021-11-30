@@ -31,7 +31,7 @@ const GolfClubNFTInteractiveCard = ({
       />
       <div>
         <center>
-          <b>Price: {price}</b>
+          {price && <b>Price: {price}</b>}
           <ButtonPrimary
             style={{ width: 'auto', marginTop: '15px', padding: '5px' }}
             onClick={blockButton ? () => {} : () => onClickButton(golfClub.id)}

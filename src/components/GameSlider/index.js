@@ -14,6 +14,8 @@ import { getGameSceneImage } from 'constants/game'
 import { Flex } from 'rebass'
 import { ButtonPrimary } from 'components/Button'
 import ClaimRewards from 'components/ClaimRewards'
+import { useApplicationState } from 'store/application/state'
+import { FIND_TOURNAMENT } from 'store/application/types'
 
 const Game = styled.div`
   width: 90vw;
@@ -131,6 +133,7 @@ const GameSlider = ({
   const [displayRound, setDisplayRound] = useState(null)
   const [currentRound, setCurrentRound] = useState(null)
   const { isLoading, neverLoaded, startLoading, stopLoading } = useLoading()
+  const { openPopup, closePopup } = useApplicationState()
   const slider = useRef(null)
 
   function updateCurrentRound(newIndex) {
@@ -165,8 +168,54 @@ const GameSlider = ({
     }
   }
 
-  function handleFindGame() {
-    findGame(refreshCollection)
+  function afterTournamentFound() {
+    openPopup(FIND_TOURNAMENT, () => (
+      <div>
+        <h1>Tournament found!</h1>
+        <ButtonPrimary
+          onClick={() => closePopup(FIND_TOURNAMENT)}
+          style={{ width: '150px' }}
+        >
+          Continue...
+        </ButtonPrimary>
+      </div>
+    ))
+
+    refreshCollection()
+    refreshRounds()
+  }
+
+  function handleFindTournament() {
+    openPopup(FIND_TOURNAMENT, () => (
+      <div align="center">
+        <h3>Waiting user to approve the transaction...</h3>
+        <SimpleLoader />
+      </div>
+    ))
+
+    findGame({
+      onStart: () =>
+        openPopup(FIND_TOURNAMENT, () => (
+          <div align="center">
+            <h3>Transaction sent. </h3>
+            <h4>Waiting block confirmations...</h4>
+            <SimpleLoader />
+          </div>
+        )),
+      onSuccess: afterTournamentFound,
+      onError: () =>
+        openPopup(FIND_TOURNAMENT, () => (
+          <div>
+            <h3>Error trying to find tournament!</h3>
+            <ButtonPrimary
+              onClick={() => closePopup(FIND_TOURNAMENT)}
+              style={{ width: '150px' }}
+            >
+              Continue...
+            </ButtonPrimary>
+          </div>
+        )),
+    })
   }
 
   function afterChangeSlide(_roundIndex) {
@@ -195,7 +244,7 @@ const GameSlider = ({
           <ClaimRewards refreshCollection={refreshCollection} />
           <ButtonPrimary
             style={{ width: '200px', height: '40px' }}
-            onClick={handleFindGame}
+            onClick={handleFindTournament}
           >
             Find new tournament
           </ButtonPrimary>

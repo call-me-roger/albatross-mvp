@@ -307,7 +307,7 @@ export function convertABI() {
 }
 //console.log('marketplaceABI', convertABI())
 
-function getSignedContract(signer) {
+export function getSignedContractMarketplace(signer) {
   return new ethers.Contract(
     MARKETPLACE_CONTRACT_ADDRESS,
     MARKETPLACE_ABI,
@@ -315,7 +315,7 @@ function getSignedContract(signer) {
   )
 }
 
-function getReadContract() {
+function getReadContractMarketplace() {
   return new ethers.Contract(
     MARKETPLACE_CONTRACT_ADDRESS,
     MARKETPLACE_ABI,
@@ -329,7 +329,7 @@ export async function getListings() {
   const listedTokenIds = []
 
   if (address) {
-    const contract = getReadContract()
+    const contract = getReadContractMarketplace()
     const nextListingId = await contract.nextListingId()
     const totalListings = nextListingId.toNumber()
     for (let i = 0; i < totalListings; i++) {
@@ -345,7 +345,7 @@ export async function getListings() {
 export async function getListedTokens() {
   const listedTokenIds = await getListings()
   const result = []
-  const contract = getReadContract()
+  const contract = getReadContractMarketplace()
   const nftContract = getNFTReadContract()
 
   await Promise.all(

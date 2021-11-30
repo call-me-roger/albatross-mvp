@@ -965,7 +965,7 @@ export async function getRounds() {
   return { rounds: result, currentRoundIndex }
 }
 
-export async function findGame(callback) {
+export async function findGame({ onStart, onSuccess, onError }) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   const result = []
@@ -976,11 +976,12 @@ export async function findGame(callback) {
       const sent = await contract.findGame({
         value: ethers.utils.parseEther(gameFeePrice),
       })
+      if (typeof onSuccess === 'function') onStart()
       await sent.wait(1)
-      if (typeof callback === 'function') callback()
+      if (typeof onSuccess === 'function') onSuccess()
     } catch (err) {
       console.log({ err })
-      alert('Error trying to find a game. Try again!')
+      if (typeof onError === 'function') onError()
     }
   }
   return result
