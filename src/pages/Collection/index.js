@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import useLoading from 'hooks/useLoading'
 import { SimpleGrid } from 'pages/Template/styles'
 import SimpleLoader from 'components/SimpleLoader'
 import NoGolfClubMessage from 'components/NoGolfClubMessage'
 import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
-import { getCollection, transferNFT } from 'contracts/GolfClub'
-import { orderArrayByObjAttr } from '../../utils/array/sort'
+import { transferNFT } from 'contracts/GolfClub'
 import ClaimRewards from 'components/ClaimRewards'
 import SellNFTModal from 'components/SellNFTModal'
 import { useHistory } from 'react-router'
@@ -15,17 +13,14 @@ import {
   MARKETPLACE_SELL,
   TRANSFER_NFT,
 } from 'store/application/types'
-import {
-  approveMarketplace,
-  isApprovedToSell,
-  sellNFT,
-} from 'contracts/Marketplace'
+import { approveMarketplace, sellNFT } from 'contracts/Marketplace'
 import { useApplicationState } from 'store/application/state'
 import { ButtonPrimary } from 'components/Button'
 import TransferNFTModal from 'components/TransferNFTModal'
 import { DollarSign, Send } from 'react-feather'
 import { Flex } from 'rebass'
 import useCallbackPopups from 'hooks/useCallbackPopups'
+import useGolfClubCollection from 'hooks/useGolfClubCollection'
 
 const Display = styled.div`
   padding: 15px;
@@ -34,33 +29,13 @@ const Display = styled.div`
   flex-flow: row wrap;
 `
 
-const Dashboard = () => {
-  const [collection, setCollection] = useState([])
-  const { isLoading, startLoading, stopLoading } = useLoading()
+const Collection = () => {
   const { openPopup, closePopup } = useApplicationState()
   const { waitingUser, onSendTx, successPopup, errorPopup } =
     useCallbackPopups()
-  const [isApproved, setApproved] = useState(false)
+  const { collection, refreshCollection, isLoading, isApproved } =
+    useGolfClubCollection()
   const history = useHistory()
-
-  async function refreshCollection() {
-    startLoading()
-    const newCollection = await getCollection()
-    if (newCollection?.length > 0) {
-      const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
-      setCollection(ordered)
-    }
-    stopLoading()
-    if (!isApproved) {
-      const approvedResult = await isApprovedToSell()
-      if (approvedResult) setApproved(approvedResult)
-    }
-  }
-
-  useEffect(() => {
-    refreshCollection()
-    // eslint-disable-next-line
-  }, [])
 
   function handleSellNFT(_golfClub) {
     if (_golfClub?.id) {
@@ -208,4 +183,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Collection

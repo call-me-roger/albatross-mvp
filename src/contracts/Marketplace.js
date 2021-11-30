@@ -336,22 +336,16 @@ export async function getListedTokens() {
 
   const listedTokenIds = await getListings()
   const result = []
-  const contract = getReadContractMarketplace()
   const nftContract = getNFTReadContract()
 
   await Promise.all(
-    listedTokenIds.map(async tokenId => {
-      const listedData = await contract.listings(tokenId)
-      const listedToSale = await nftContract.listedToSale(tokenId)
-      if (listedToSale) {
-        const nftData = await getNFTDetails(nftContract, tokenId)
+    listedTokenIds.map(async _golfClubId => {
+      const { isListed, data, nft } = await getTokenListingData(_golfClubId)
+      if (isListed) {
         result.push({
-          listing: {
-            ...listedData,
-            price: ethers.utils.formatEther(listedData.price),
-          },
-          nft: nftData,
-          isMine: nftData.owner === address,
+          listing: data,
+          nft: await getNFTDetails(nftContract, _golfClubId),
+          isMine: nft.owner === address,
         })
       }
     }),
@@ -490,5 +484,17 @@ export async function claimOwnerBalance({ onSend, onSuccess, onError }) {
     } catch (err) {
       _callback(onError, err)
     }
+  }
+}
+
+export async function getTokenListingData(_golfClubId) {
+  const contract = getReadContractMarketplace()
+  const nftContract = getNFTReadContract()
+  const data = await contract.listings(_golfClubId)
+  const isListed = await nftContract.listedToSale(_golfClubId)
+
+  return {
+    isListed,
+    data: { ...data, price: ethers.utils.formatEther(data.price) },
   }
 }
