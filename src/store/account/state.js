@@ -1,7 +1,7 @@
 import { createState, useState } from '@hookstate/core'
 
 const accountState = createState({
-  loading: true,
+  isLoading: true,
   logged: false,
   address: null,
   balance: 0,
@@ -15,7 +15,7 @@ export function useAccountState() {
       return state.logged.get()
     },
     get isLoading() {
-      return state.loading.get()
+      return state.isLoading.get()
     },
     get address() {
       return state.address.get()
@@ -24,7 +24,7 @@ export function useAccountState() {
       return state.balance.get()
     },
     setLoading(isLoading = false) {
-      return state.loading.set(isLoading)
+      return state.isLoading.set(isLoading)
     },
     setLogged(isLogged = false) {
       return state.logged.set(isLogged)

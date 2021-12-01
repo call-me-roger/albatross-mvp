@@ -1045,8 +1045,8 @@ export function getSecondsToPlayPercentage(_secondsToPlay) {
 export async function listenTransfers(event) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
-  console.log('listenTransfers')
   if (address) {
+    console.log('listenTransfers')
     const contract = getNFTReadContract()
     contract.on('Transfer', (_from, _to, _tokenId) => {
       if (_to === address) {

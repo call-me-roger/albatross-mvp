@@ -497,8 +497,8 @@ export async function getTokenListingData(_golfClubId) {
 export async function listenMarketplace(event) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
-  console.log('listenMarketplace')
   if (address) {
+    console.log('listenMarketplace')
     const contract = getReadContractMarketplace()
     contract.on('ListingUpdate', (_tokenId, _price, _seller, _active) => {
       _callback(event, {
