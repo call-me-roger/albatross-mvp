@@ -1,13 +1,17 @@
-import { useEffect } from 'react'
-import { listenTransfers } from 'contracts/GolfClub'
+import React, { useEffect } from 'react'
+import { ethers } from 'ethers'
+import { listenTransfers, readNFTDetails } from 'contracts/GolfClub'
 import { listenMarketplace } from 'contracts/Marketplace'
 import useGolfClubCollection from 'hooks/useGolfClubCollection'
 import useListedNFTs from 'hooks/useListedNFTs'
 import { useAccountState } from 'store/account/state'
 import { listenBalance } from 'contracts/Balance'
 import { provider } from 'constants/provider'
+import useCallbackPopups from 'hooks/useCallbackPopups'
+import { TRANSFER_NFT } from 'store/application/types'
+import GolfClubNFTCard from 'components/GolfClubNFTCard'
 
-const EventProvider = ({ isListening }) => {
+const EventProvider = () => {
   const { isLoading, refreshCollection } = useGolfClubCollection({
     initialFetch: true,
   })
@@ -16,16 +20,25 @@ const EventProvider = ({ isListening }) => {
   })
   const {
     isLoading: balanceLoading,
-    setLoading: setLoadingBalance,
+    startLoading,
+    stopLoading,
     setBalance,
   } = useAccountState()
 
-  function _call(event) {
-    if (isListening) event()
-  }
+  const { successPopup } = useCallbackPopups()
 
-  function mintEvent({ _tokenId, isMint }) {
-    if (!isMint) console.log('Transfer received', { _tokenId })
+  async function mintEvent({ _tokenId, isMint }) {
+    if (!isMint) {
+      const golfClub = await readNFTDetails(_tokenId)
+      successPopup(
+        TRANSFER_NFT,
+        <div style={{ width: '280px' }}>
+          <h3 style={{ marginBottom: '20px' }}>New NFT received</h3>
+          <GolfClubNFTCard golfClub={golfClub} />
+          <br />
+        </div>,
+      )
+    }
     if (!isLoading) refreshCollection()
   }
 
@@ -35,17 +48,17 @@ const EventProvider = ({ isListening }) => {
 
   async function balanceUpdateEvent({ address }) {
     if (!balanceLoading) {
-      setLoadingBalance(true)
+      startLoading()
       const newBalance = await provider.getBalance(address)
-      setBalance(newBalance)
-      setLoadingBalance(false)
+      setBalance(ethers.utils.formatEther(newBalance))
     }
+    stopLoading(false)
   }
 
   useEffect(() => {
-    listenTransfers(_call(mintEvent))
-    listenMarketplace(_call(marketplaceUpdateEvent))
-    listenBalance(_call(balanceUpdateEvent))
+    listenTransfers(mintEvent)
+    listenMarketplace(marketplaceUpdateEvent)
+    listenBalance(balanceUpdateEvent)
     // eslint-disable-next-line
   }, [])
 

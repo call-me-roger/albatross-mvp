@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { getCollection } from 'contracts/GolfClub'
 import { isApprovedToSell } from 'contracts/Marketplace'
 import { orderArrayByObjAttr } from 'utils/array/sort'
@@ -14,8 +14,9 @@ const useGolfClubCollection = props => {
     neverLoaded,
     startLoading,
     stopLoading,
+    isApproved,
+    setApproved,
   } = useCollectionState()
-  const [isApproved, setApproved] = useState(false)
 
   async function refreshCollection() {
     if (!isLoading) {

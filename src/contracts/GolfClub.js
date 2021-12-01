@@ -972,6 +972,11 @@ export async function getNFTDetails(contract, _golfClubId) {
   }
 }
 
+export async function readNFTDetails(_golfClubId) {
+  const contract = getNFTReadContract()
+  return getNFTDetails(contract, _golfClubId)
+}
+
 export async function getCollection() {
   const signer = provider.getSigner()
   const address = await signer.getAddress()

@@ -4,6 +4,7 @@ const collectionState = createState({
   collection: [],
   isLoading: false,
   neverLoaded: true,
+  isApproved: false,
 })
 
 export function useCollectionState() {
@@ -19,6 +20,9 @@ export function useCollectionState() {
     get neverLoaded() {
       return state.neverLoaded.get()
     },
+    get isApproved() {
+      return state.isApproved.get()
+    },
     setCollection(newCollection) {
       return state.collection.set(newCollection)
     },
@@ -28,6 +32,9 @@ export function useCollectionState() {
     stopLoading() {
       state.isLoading.set(false)
       if (state.neverLoaded.get()) state.neverLoaded.set(false)
+    },
+    setApproved(result) {
+      return state.isApproved.set(result)
     },
   }
 }
