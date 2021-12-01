@@ -2,29 +2,39 @@ import { useEffect, useState } from 'react'
 import { getCollection } from 'contracts/GolfClub'
 import { isApprovedToSell } from 'contracts/Marketplace'
 import { orderArrayByObjAttr } from 'utils/array/sort'
-import useLoading from './useLoading'
+import { useCollectionState } from 'store/collection/state'
 
-const useGolfClubCollection = () => {
-  const [collection, setCollection] = useState([])
+const useGolfClubCollection = props => {
+  const { initialFetch = false } = props || {}
+
+  const {
+    collection,
+    setCollection,
+    isLoading,
+    neverLoaded,
+    startLoading,
+    stopLoading,
+  } = useCollectionState()
   const [isApproved, setApproved] = useState(false)
-  const { isLoading, neverLoaded, startLoading, stopLoading } = useLoading()
 
   async function refreshCollection() {
-    startLoading()
-    const newCollection = await getCollection()
-    if (newCollection?.length > 0) {
-      const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
-      setCollection(ordered)
-    }
-    stopLoading()
-    if (!isApproved) {
-      const approvedResult = await isApprovedToSell()
-      if (approvedResult) setApproved(approvedResult)
+    if (!isLoading) {
+      startLoading()
+      const newCollection = await getCollection()
+      if (newCollection?.length > 0) {
+        const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
+        setCollection(ordered)
+      }
+      stopLoading()
+      if (!isApproved) {
+        const approvedResult = await isApprovedToSell()
+        if (approvedResult) setApproved(approvedResult)
+      }
     }
   }
 
   useEffect(() => {
-    refreshCollection()
+    if (initialFetch) refreshCollection()
     // eslint-disable-next-line
   }, [])
 

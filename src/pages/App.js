@@ -1,6 +1,6 @@
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import React, { Suspense, useEffect } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { HashRouter as Router, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import { ethers } from 'ethers'
@@ -10,6 +10,7 @@ import Header from 'components/Header'
 import ModalProvider from 'components/ModalProvider'
 import ProtectedRoute from 'components/ProtectedRoute'
 import { useAccountState } from '../store/account/state'
+import EventProvider from 'contracts/EventProvider'
 
 const AppWrapper = styled.div`
   display: flex;
@@ -41,6 +42,7 @@ const HeaderWrapper = styled.div`
 `
 
 function App() {
+  const [listenEvents, setListenEvents] = useState(false)
   const { setLogged, setAddress, setBalance } = useAccountState()
 
   async function setSigner() {
@@ -69,6 +71,7 @@ function App() {
           params: [{ chainId: CHAIN_ID }],
         })
         setSigner()
+        setListenEvents(true)
       } catch (err) {
         console.log({ err })
       }
@@ -87,6 +90,7 @@ function App() {
       <Router>
         <AppWrapper>
           <ModalProvider />
+          <EventProvider isListening={listenEvents} />
 
           <HeaderWrapper>
             <Header />

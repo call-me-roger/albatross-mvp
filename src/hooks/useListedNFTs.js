@@ -1,11 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { getListedTokens } from 'contracts/Marketplace'
 import { orderArrayByObjAttr } from 'utils/array/sort'
-import useLoading from './useLoading'
+import { useMarketplaceState } from 'store/marketplace/state'
 
-const useListedNFTs = () => {
-  const [listings, setListings] = useState([])
-  const { isLoading, neverLoaded, startLoading, stopLoading } = useLoading()
+const useListedNFTs = props => {
+  const { initialFetch = false } = props || {}
+  const {
+    listings,
+    setListings,
+    isLoading,
+    neverLoaded,
+    startLoading,
+    stopLoading,
+  } = useMarketplaceState()
 
   async function refreshListings() {
     startLoading()
@@ -18,7 +25,7 @@ const useListedNFTs = () => {
   }
 
   useEffect(() => {
-    refreshListings()
+    if (initialFetch) refreshListings()
     // eslint-disable-next-line
   }, [])
 

@@ -5,7 +5,7 @@ import { getNFTReadContract } from './GolfClub'
 import { convertABI, _callback } from './utils'
 
 const MARKETPLACE_CONTRACT_ADDRESS =
-  '0xE40FE0f1342F6248A77cB7199Cb8580456a6A349'
+  '0xe0373A1D7aF00e471Da026F6a8404c6385971F56'
 const SOL_MARKETPLACE_ABI = [
   {
     anonymous: false,
@@ -492,4 +492,21 @@ export async function getTokenListingData(_golfClubId) {
   const data = await contract.listings(_golfClubId)
 
   return { ...data, price: ethers.utils.formatEther(data.price) }
+}
+
+export async function listenMarketplace(event) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  console.log('listenMarketplace')
+  if (address) {
+    const contract = getReadContractMarketplace()
+    contract.on('ListingUpdate', (_tokenId, _price, _seller, _active) => {
+      _callback(event, {
+        _tokenId: _tokenId.toNumber(),
+        _price: ethers.utils.formatEther(_price),
+        _seller,
+        _active,
+      })
+    })
+  }
 }

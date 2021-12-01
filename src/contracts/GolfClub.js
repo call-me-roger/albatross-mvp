@@ -4,7 +4,7 @@ import { ruleOfThree } from 'utils/MathUtils'
 import { convertABI, _callback } from './utils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
-  '0x178B697E1335029b0cC6e869A763Af612deEf1Fb'
+  '0xC0a929eb438022Af84dA5ed5d88f22504713bcaA'
 const SOL_NFT_ABI = [
   {
     inputs: [],
@@ -640,6 +640,31 @@ const SOL_NFT_ABI = [
   {
     inputs: [
       {
+        internalType: 'address payable',
+        name: '_to',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'sendEthFromContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'sendEthToContract',
+    outputs: [],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address',
         name: 'operator',
         type: 'address',
@@ -862,6 +887,8 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function safeOperatorTransfer(address _nftOwner, address _toAddress, uint256 _golfClubId)',
   'function safeTransferFrom(address from, address to, uint256 _golfClubId)',
   'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
+  'function sendEthFromContract(address _to, uint256 _amount)',
+  'function sendEthToContract() payable',
   'function setApprovalForAll(address operator, bool approved)',
   'function setBaseURI(string _newBaseURI)',
   'function setGameplayContract(address _contractAddress)',
@@ -1013,4 +1040,19 @@ export function getSecondsToPlayPercentage(_secondsToPlay) {
   const total24h = 86400
   const value = total24h - _secondsToPlay
   return ruleOfThree(total24h, value)
+}
+
+export async function listenTransfers(event) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  console.log('listenTransfers')
+  if (address) {
+    const contract = getNFTReadContract()
+    contract.on('Transfer', (_from, _to, _tokenId) => {
+      if (_to === address) {
+        const isMint = _from === '0x0000000000000000000000000000000000000000'
+        _callback(event, { _tokenId: _tokenId.toNumber(), isMint })
+      }
+    })
+  }
 }
