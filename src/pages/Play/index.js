@@ -10,6 +10,7 @@ import { GAME_RESULT_LOSS, GAME_RESULT_VICTORY } from 'store/application/types'
 import { useApplicationState } from 'store/application/state'
 import { getGameResultImage } from 'constants/game'
 import useGolfClubCollection from 'hooks/useGolfClubCollection'
+import useClaimRewards from 'hooks/useClaimRewards'
 
 const GameScene = styled.div`
   width: 700px;
@@ -47,10 +48,12 @@ const Play = () => {
   const { openPopup, closePopup } = useApplicationState()
   const { collection, refreshCollection, isLoading, neverLoaded } =
     useGolfClubCollection()
+  const { refreshRewards } = useClaimRewards()
 
   function roundResultEffect(result) {
     const { _matchResult } = result
     if (_matchResult === 1) {
+      refreshRewards()
       openPopup(GAME_RESULT_VICTORY, () => (
         <GameScene image={getGameResultImage('win')}>
           <h1 className="title win">You Win!</h1>

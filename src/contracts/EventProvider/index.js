@@ -10,6 +10,7 @@ import { provider } from 'constants/provider'
 import useCallbackPopups from 'hooks/useCallbackPopups'
 import { TRANSFER_NFT } from 'store/application/types'
 import GolfClubNFTCard from 'components/GolfClubNFTCard'
+import useClaimOwnerBalance from 'hooks/useClaimOwnerBalance'
 
 const EventProvider = () => {
   const { isLoading, refreshCollection } = useGolfClubCollection({
@@ -24,6 +25,9 @@ const EventProvider = () => {
     stopLoading,
     setBalance,
   } = useAccountState()
+  const { refreshBalance: refreshClaimOwnerBalance } = useClaimOwnerBalance({
+    initialFetch: true,
+  })
 
   const { successPopup } = useCallbackPopups()
 
@@ -42,8 +46,11 @@ const EventProvider = () => {
     if (!isLoading) refreshCollection()
   }
 
-  function marketplaceUpdateEvent() {
-    if (!marketplaceLoading) refreshListings()
+  function marketplaceUpdateEvent({ isMine }) {
+    if (!marketplaceLoading) {
+      refreshListings()
+      if (isMine) refreshClaimOwnerBalance()
+    }
   }
 
   async function balanceUpdateEvent({ address }) {

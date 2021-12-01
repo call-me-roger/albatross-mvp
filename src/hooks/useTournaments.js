@@ -63,6 +63,8 @@ const useTournaments = props => {
     setDisplayRound,
     refreshRounds,
     isLoading,
+    startLoading,
+    stopLoading,
     neverLoaded,
     sliderRef,
   }

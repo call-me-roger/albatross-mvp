@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Flex } from 'rebass'
 import { ButtonPrimary } from 'components/Button'
-import { claimOwnerBalance, getClaimOwnerBalance } from 'contracts/Marketplace'
+import { claimOwnerBalance } from 'contracts/Marketplace'
 import useCallbackPopups from 'hooks/useCallbackPopups'
 import { MARKETPLACE_CLAIM_BALANCE } from 'store/application/types'
+import useClaimOwnerBalance from 'hooks/useClaimOwnerBalance'
 
 const ClaimOwnerBalance = () => {
-  const [claimBalance, setClaimBalance] = useState(0)
+  const { balance, refreshBalance } = useClaimOwnerBalance()
+
   const { waitingUser, onSendTx, successPopup, errorPopup } =
     useCallbackPopups()
-
-  async function refreshBalance() {
-    const resultClaimBalance = await getClaimOwnerBalance()
-    setClaimBalance(resultClaimBalance)
-  }
-
-  useEffect(() => {
-    refreshBalance()
-  }, [])
 
   function handleClaimRewards() {
     waitingUser(MARKETPLACE_CLAIM_BALANCE)
@@ -45,12 +38,12 @@ const ClaimOwnerBalance = () => {
     <Flex justifyContent="center" alignItems="center">
       <div>
         <div>
-          <b>Marketplace balance: {claimBalance}</b>
+          <b>Marketplace balance: {balance}</b>
         </div>
       </div>
       <ButtonPrimary
         style={{ margin: '0px 15px', padding: '2px 15px', width: 'auto' }}
-        disabled={claimBalance <= 0}
+        disabled={balance <= 0}
         onClick={handleClaimRewards}
       >
         Claim

@@ -260,9 +260,7 @@ const GameSlider = ({
               <h1>Tournament #{currentTournament}</h1>
             )}
           </div>
-          {!noRounds ? (
-            <ClaimRewards refreshCollection={refreshCollection} />
-          ) : null}
+          {!noRounds ? <ClaimRewards /> : null}
           <ButtonPrimary
             style={{ width: '200px', height: '40px' }}
             onClick={handleFindTournament}

@@ -506,6 +506,7 @@ export async function listenMarketplace(event) {
         _price: ethers.utils.formatEther(_price),
         _seller,
         _active,
+        isMine: address === _seller,
       })
     })
   }

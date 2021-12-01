@@ -134,7 +134,7 @@ const Collection = () => {
       <center>
         <Flex justifyContent="space-between" alignItems="center">
           <h1 style={{ width: '33.3%' }}>Your Golf Club Collection</h1>
-          <ClaimRewards refreshCollection={refreshCollection} />
+          <ClaimRewards />
           <div style={{ width: '33.3%' }}>
             {!isApproved && (
               <ButtonPrimary

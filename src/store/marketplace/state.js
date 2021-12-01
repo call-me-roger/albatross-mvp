@@ -4,6 +4,7 @@ const marketplaceState = createState({
   listings: [],
   isLoading: false,
   neverLoaded: true,
+  balance: 0,
 })
 
 export function useMarketplaceState() {
@@ -19,6 +20,9 @@ export function useMarketplaceState() {
     get neverLoaded() {
       return state.neverLoaded.get()
     },
+    get balance() {
+      return state.balance.get()
+    },
     setListings(newListings) {
       return state.listings.set(newListings)
     },
@@ -28,6 +32,9 @@ export function useMarketplaceState() {
     stopLoading() {
       state.isLoading.set(false)
       if (state.neverLoaded.get()) state.neverLoaded.set(false)
+    },
+    setBalance(newBalance) {
+      return state.balance.set(newBalance)
     },
   }
 }
