@@ -1,6 +1,6 @@
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { HashRouter as Router, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import { routes } from './routes'
@@ -41,7 +41,6 @@ const HeaderWrapper = styled.div`
 `
 
 function App() {
-  const [listenEvents, setListenEvents] = useState(false)
   const { setLogged, setAddress } = useAccountState()
 
   async function setSigner() {
@@ -68,13 +67,15 @@ function App() {
           params: [{ chainId: CHAIN_ID }],
         })
         setSigner()
-        setListenEvents(true)
       } catch (err) {
         console.log({ err })
       }
 
       provider.on('network', (newNetwork, oldNetwork) => {
         if (oldNetwork) window.location.reload()
+      })
+      window.ethereum.on('accountsChanged', () => {
+        window.location.reload()
       })
     }
 
@@ -87,7 +88,7 @@ function App() {
       <Router>
         <AppWrapper>
           <ModalProvider />
-          <EventProvider isListening={listenEvents} />
+          <EventProvider />
 
           <HeaderWrapper>
             <Header />
