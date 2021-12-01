@@ -12,6 +12,7 @@ import { MARKETPLACE_BUY, MARKETPLACE_CANCEL } from 'store/application/types'
 import { ButtonPrimary } from 'components/Button'
 import { useApplicationState } from 'store/application/state'
 import { useHistory } from 'react-router'
+import useListedNFTs from 'hooks/useListedNFTs'
 
 const Display = styled.div`
   padding: 15px;
@@ -20,24 +21,13 @@ const Display = styled.div`
   flex-flow: row wrap;
 `
 
-const Dashboard = () => {
-  const [collection, setCollection] = useState([])
-  const { isLoading, startLoading, stopLoading } = useLoading()
+const Marketplace = () => {
   const { openPopup, closePopup } = useApplicationState()
+  const { listings, isLoading, refreshListings } = useListedNFTs()
   const history = useHistory()
 
-  async function refreshCollection() {
-    startLoading()
-    const newCollection = await getListedTokens()
-    if (newCollection?.length > 0) {
-      const ordered = orderArrayByObjAttr(newCollection, 'nft', 'id', true)
-      setCollection(ordered)
-    }
-    stopLoading()
-  }
-
   useEffect(() => {
-    refreshCollection()
+    refreshListings()
     // eslint-disable-next-line
   }, [])
 
@@ -61,7 +51,7 @@ const Dashboard = () => {
   }
 
   function buyError(err) {
-    refreshCollection()
+    refreshListings()
     openPopup(MARKETPLACE_BUY, () => (
       <div align="center">
         <h3>Error trying to buy the NFT.</h3>
@@ -74,7 +64,7 @@ const Dashboard = () => {
   }
 
   function onSuccessBuy() {
-    refreshCollection()
+    refreshListings()
     openPopup(MARKETPLACE_BUY, () => (
       <div align="center">
         <h3>NFT added to your collection!</h3>
@@ -95,7 +85,7 @@ const Dashboard = () => {
   }
 
   function onSuccessCancel() {
-    refreshCollection()
+    refreshListings()
     openPopup(MARKETPLACE_CANCEL, () => (
       <div align="center">
         <h3>Listing canceled!</h3>
@@ -107,7 +97,7 @@ const Dashboard = () => {
   }
 
   function cancelListinError(err) {
-    refreshCollection()
+    refreshListings()
     openPopup(MARKETPLACE_CANCEL, () => (
       <div align="center">
         <h3>Error trying to cancel listing.</h3>
@@ -132,18 +122,18 @@ const Dashboard = () => {
     <SimpleGrid>
       <center>
         <h1>Marketplace</h1>
-        <ClaimOwnerBalance refreshCollection={refreshCollection} />
+        <ClaimOwnerBalance />
         {isLoading && <SimpleLoader />}
         <NoGolfClubMessage
           isLoading={isLoading}
-          collection={collection}
+          collection={listings}
           text="0 GolfClubs listed to sale!"
           buttonText="Sell my NFTs"
           onClick={() => history.push('/collection')}
         />
       </center>
       <Display>
-        {collection.map(({ nft: golfClub, listing, isMine }) => {
+        {listings.map(({ nft: golfClub, listing, isMine }) => {
           return (
             <GolfClubNFTInteractiveCard
               key={golfClub.id}
@@ -164,4 +154,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard
+export default Marketplace
