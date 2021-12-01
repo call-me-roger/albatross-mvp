@@ -1,21 +1,20 @@
+import React from 'react'
+import { Flex } from 'rebass'
+import Slider from 'react-slick'
+import styled, { keyframes } from 'styled-components'
+import { ButtonPrimary } from 'components/Button'
+import ClaimRewards from 'components/ClaimRewards'
 import SimpleLoader from 'components/SimpleLoader'
 import {
   findGame,
-  getRounds,
   getTournamentNumberByRoundIndex,
   playGame,
 } from 'contracts/Gameplay'
 import { getPerkByType } from 'contracts/GolfClub'
-import useLoading from 'hooks/useLoading'
-import React, { useEffect, useRef, useState } from 'react'
-import styled, { keyframes } from 'styled-components'
-import Slider from 'react-slick'
 import { getGameSceneImage } from 'constants/game'
-import { Flex } from 'rebass'
-import { ButtonPrimary } from 'components/Button'
-import ClaimRewards from 'components/ClaimRewards'
 import { useApplicationState } from 'store/application/state'
 import { FIND_TOURNAMENT, START_GAME } from 'store/application/types'
+import useTournaments from 'hooks/useTournaments'
 
 const Game = styled.div`
   width: 90vw;
@@ -129,33 +128,19 @@ const GameSlider = ({
   resetSelectedGolfClubId,
   refreshCollection,
 }) => {
-  const [rounds, setRounds] = useState([])
-  const [displayRound, setDisplayRound] = useState(null)
-  const [currentRound, setCurrentRound] = useState(null)
-  const { isLoading, neverLoaded, startLoading, stopLoading } = useLoading()
+  const {
+    rounds,
+    displayRound,
+    currentRound,
+    isLoading,
+    neverLoaded,
+    startLoading,
+    stopLoading,
+    refreshRounds,
+    setDisplayRound,
+    sliderRef,
+  } = useTournaments({ initialFetch: true })
   const { openPopup, closePopup } = useApplicationState()
-  const slider = useRef(null)
-
-  function updateCurrentRound(newIndex) {
-    const sliderApi = slider.current
-    if (sliderApi?.slickGoTo) sliderApi.slickGoTo(newIndex)
-    setCurrentRound(newIndex)
-    setDisplayRound(newIndex)
-  }
-
-  async function refreshRounds() {
-    startLoading()
-    const { rounds: newRounds, currentRoundIndex } = await getRounds()
-    setRounds(newRounds)
-    updateCurrentRound(currentRoundIndex)
-
-    stopLoading()
-  }
-
-  useEffect(() => {
-    refreshRounds()
-    // eslint-disable-next-line
-  }, [])
 
   async function playGameEffect() {
     openPopup(START_GAME, () => (
@@ -306,7 +291,7 @@ const GameSlider = ({
           <SliderWrapper>
             <Slider
               {...settings}
-              ref={ref => (slider.current = ref)}
+              ref={ref => (sliderRef.current = ref)}
               afterChange={afterChangeSlide}
             >
               {rounds?.map((roundInfo, index) => {

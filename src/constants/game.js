@@ -5,7 +5,7 @@ export function getGameSceneImage(round) {
   const format = 'png'
   let image = ''
 
-  const perk = getPerkByType(round?.bonusPerkType).toLowerCase()
+  const perk = getPerkByType(100).toLowerCase()
   if (perk === 'long') image = 'long'
   if (perk === 'short') image = 'short'
   if (perk === 'precision') image = 'precision'

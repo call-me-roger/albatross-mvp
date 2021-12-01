@@ -1,17 +1,18 @@
 import { createState, useState } from '@hookstate/core'
 
-const marketplaceState = createState({
-  listings: [],
+const tournamentState = createState({
+  rounds: [],
+  currentRoundIndex: 0,
   isLoading: false,
   neverLoaded: true,
 })
 
-export function useMarketplaceState() {
-  const state = useState(marketplaceState)
+export function useTournamentState() {
+  const state = useState(tournamentState)
 
   return {
-    get listings() {
-      return state.listings.get()
+    get rounds() {
+      return state.rounds.get()
     },
     get isLoading() {
       return state.isLoading.get()
@@ -19,8 +20,11 @@ export function useMarketplaceState() {
     get neverLoaded() {
       return state.neverLoaded.get()
     },
-    setListings(newListings) {
-      return state.listings.set(newListings)
+    setRounds(newRounds) {
+      return state.rounds.set(newRounds)
+    },
+    setCurrentRoundIndex(newIndex) {
+      return state.currentRoundIndex.set(newIndex)
     },
     startLoading() {
       state.isLoading.set(true)

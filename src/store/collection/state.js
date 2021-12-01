@@ -24,10 +24,10 @@ export function useCollectionState() {
     },
     startLoading() {
       state.isLoading.set(true)
-      if (state.neverLoaded.get()) state.neverLoaded.set(false)
     },
     stopLoading() {
       state.isLoading.set(false)
+      if (state.neverLoaded.get()) state.neverLoaded.set(false)
     },
   }
 }

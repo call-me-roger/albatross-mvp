@@ -3,7 +3,6 @@ import 'slick-carousel/slick/slick-theme.css'
 import React, { Suspense, useEffect, useState } from 'react'
 import { HashRouter as Router, Switch } from 'react-router-dom'
 import styled from 'styled-components'
-import { ethers } from 'ethers'
 import { routes } from './routes'
 import { CHAIN_ID, metamaskParams, provider } from 'constants/provider'
 import Header from 'components/Header'
@@ -43,17 +42,15 @@ const HeaderWrapper = styled.div`
 
 function App() {
   const [listenEvents, setListenEvents] = useState(false)
-  const { setLogged, setAddress, setBalance } = useAccountState()
+  const { setLogged, setAddress } = useAccountState()
 
   async function setSigner() {
     const signer = provider.getSigner()
     const newAddress = await signer.getAddress()
     if (newAddress) {
-      const newBalance = await provider.getBalance(newAddress)
       console.log('Account:', newAddress)
       setLogged(true)
       setAddress(newAddress)
-      setBalance(ethers.utils.formatEther(newBalance))
     }
   }
 
