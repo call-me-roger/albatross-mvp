@@ -2,16 +2,14 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { SimpleGrid } from 'pages/Template/styles'
 import { listenRoundPlayed } from 'contracts/Gameplay'
-import { getCollection } from 'contracts/GolfClub'
 import { ButtonPrimary } from 'components/Button'
-import { orderArrayByObjAttr } from '../../utils/array/sort'
 import GameSlider from 'components/GameSlider'
-import useLoading from 'hooks/useLoading'
 import NoGolfClubMessage from 'components/NoGolfClubMessage'
 import CollectionSlider from 'components/CollectionSlider'
 import { GAME_RESULT_LOSS, GAME_RESULT_VICTORY } from 'store/application/types'
 import { useApplicationState } from 'store/application/state'
 import { getGameResultImage } from 'constants/game'
+import useGolfClubCollection from 'hooks/useGolfClubCollection'
 
 const GameScene = styled.div`
   width: 700px;
@@ -45,20 +43,10 @@ const GameScene = styled.div`
 `
 
 const Play = () => {
-  const [collection, setCollection] = useState([])
   const [selectedGolfClubId, setSelectedGolfClubId] = useState(null)
-  const { isLoading, neverLoaded, startLoading, stopLoading } = useLoading()
   const { openPopup, closePopup } = useApplicationState()
-
-  async function refreshCollection() {
-    startLoading()
-    const newCollection = await getCollection()
-    if (newCollection?.length > 0) {
-      const ordered = orderArrayByObjAttr(newCollection, 'id', null, true)
-      setCollection(ordered)
-    }
-    stopLoading()
-  }
+  const { collection, refreshCollection, isLoading, neverLoaded } =
+    useGolfClubCollection()
 
   function roundResultEffect(result) {
     const { _matchResult } = result
