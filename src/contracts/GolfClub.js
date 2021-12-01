@@ -941,6 +941,7 @@ export async function getNFTDetails(contract, _golfClubId) {
     secondsToPlay: secondsToPlay.toNumber(),
     tokenURI: await contract.tokenURI(_golfClubId),
     owner: await contract.ownerOf(_golfClubId),
+    isListed: await contract.listedToSale(_golfClubId),
   }
 }
 

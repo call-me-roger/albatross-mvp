@@ -170,7 +170,13 @@ const Collection = () => {
                     !isApproved && 'First approve the marketplace to sell NFTs.'
                   }
                 >
-                  <DollarSign size="15px" style={{ marginRight: '5px' }} /> Sell
+                  {golfClub.isListed && 'Cancel listing'}
+                  {!golfClub.isListed && (
+                    <>
+                      <DollarSign size="15px" style={{ marginRight: '5px' }} />{' '}
+                      Sell
+                    </>
+                  )}
                 </font>
               }
               blockPrimaryButton={!isApproved}

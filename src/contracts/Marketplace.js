@@ -340,11 +340,12 @@ export async function getListedTokens() {
 
   await Promise.all(
     listedTokenIds.map(async _golfClubId => {
-      const { isListed, data, nft } = await getTokenListingData(_golfClubId)
-      if (isListed) {
+      const nft = await getNFTDetails(nftContract, _golfClubId)
+      if (nft?.isListed) {
+        const { data } = await getTokenListingData(_golfClubId)
         result.push({
           listing: data,
-          nft: await getNFTDetails(nftContract, _golfClubId),
+          nft,
           isMine: nft.owner === address,
         })
       }
@@ -489,12 +490,9 @@ export async function claimOwnerBalance({ onSend, onSuccess, onError }) {
 
 export async function getTokenListingData(_golfClubId) {
   const contract = getReadContractMarketplace()
-  const nftContract = getNFTReadContract()
   const data = await contract.listings(_golfClubId)
-  const isListed = await nftContract.listedToSale(_golfClubId)
 
   return {
-    isListed,
     data: { ...data, price: ethers.utils.formatEther(data.price) },
   }
 }
