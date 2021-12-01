@@ -21,6 +21,7 @@ import { DollarSign, Send } from 'react-feather'
 import { Flex } from 'rebass'
 import useCallbackPopups from 'hooks/useCallbackPopups'
 import useGolfClubCollection from 'hooks/useGolfClubCollection'
+import useMarketplaceActions from 'hooks/useMarketplaceActions'
 
 const Display = styled.div`
   padding: 15px;
@@ -35,6 +36,7 @@ const Collection = () => {
     useCallbackPopups()
   const { collection, refreshCollection, isLoading, isApproved } =
     useGolfClubCollection()
+  const { handleCancelListing } = useMarketplaceActions()
   const history = useHistory()
 
   function handleSellNFT(_golfClub) {
@@ -130,7 +132,6 @@ const Collection = () => {
   return (
     <SimpleGrid>
       <center>
-        {isLoading && <SimpleLoader />}
         <Flex justifyContent="space-between" alignItems="center">
           <h1 style={{ width: '33.3%' }}>Your Golf Club Collection</h1>
           <ClaimRewards refreshCollection={refreshCollection} />
@@ -145,6 +146,7 @@ const Collection = () => {
             )}
           </div>
         </Flex>
+        {isLoading && <SimpleLoader />}
         <NoGolfClubMessage
           isLoading={isLoading}
           collection={collection}
@@ -157,7 +159,11 @@ const Collection = () => {
             <GolfClubNFTInteractiveCard
               key={golfClub.id}
               golfClub={golfClub}
-              onClickButton={() => handleSellNFT(golfClub)}
+              onClickButton={
+                golfClub.isListed
+                  ? () => handleCancelListing(golfClub)
+                  : () => handleSellNFT(golfClub)
+              }
               onClickSecondaryButton={() => handleTransferNFT(golfClub)}
               secondaryButtonText={
                 <>

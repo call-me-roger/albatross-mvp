@@ -43,7 +43,7 @@ const Marketplace = () => {
               golfClub={golfClub}
               onClickButton={
                 isMine
-                  ? () => handleCancelListing(golfClub.id, refreshListings)
+                  ? () => handleCancelListing(golfClub, refreshListings)
                   : () =>
                       handleBuyNFT(golfClub.id, listing.price, refreshListings)
               }

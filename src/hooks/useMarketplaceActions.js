@@ -1,10 +1,15 @@
 import React from 'react'
 
 import SimpleLoader from 'components/SimpleLoader'
-import { buyNFT, cancelListing } from 'contracts/Marketplace'
+import {
+  buyNFT,
+  cancelListing,
+  getTokenListingData,
+} from 'contracts/Marketplace'
 import { useApplicationState } from 'store/application/state'
 import { MARKETPLACE_BUY, MARKETPLACE_CANCEL } from 'store/application/types'
 import { ButtonPrimary } from 'components/Button'
+import GolfClubNFTCard from 'components/GolfClubNFTCard'
 
 const useMarketplaceActions = () => {
   const { openPopup, closePopup } = useApplicationState()
@@ -19,11 +24,12 @@ const useMarketplaceActions = () => {
     ))
   }
 
-  function waitUser(TYPE) {
+  function waitUser(TYPE, children) {
     openPopup(TYPE, () => (
       <div align="center">
         <h3>Waiting user to approve the transaction...</h3>
         <SimpleLoader />
+        {children}
       </div>
     ))
   }
@@ -87,13 +93,24 @@ const useMarketplaceActions = () => {
     ))
   }
 
-  function handleCancelListing(_golfClubId, refresh) {
-    waitUser(MARKETPLACE_CANCEL)
-    cancelListing(_golfClubId, {
-      onSend: () => txSent(MARKETPLACE_CANCEL),
-      onSuccess: () => onSuccessCancel(refresh),
-      onError: err => cancelListinError(err, refresh),
-    })
+  async function handleCancelListing(golfClub, refresh) {
+    if (golfClub.id) {
+      const { price } = await getTokenListingData(golfClub.id)
+      waitUser(
+        MARKETPLACE_CANCEL,
+        <div style={{ width: '300px' }}>
+          <h3>Cancel listing...</h3>
+          <GolfClubNFTCard golfClub={golfClub} />
+          <h4>Price: {price}</h4>
+        </div>,
+      )
+
+      cancelListing(golfClub.id, {
+        onSend: () => txSent(MARKETPLACE_CANCEL),
+        onSuccess: () => onSuccessCancel(refresh),
+        onError: err => cancelListinError(err, refresh),
+      })
+    }
   }
 
   return {

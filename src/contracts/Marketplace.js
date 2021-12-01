@@ -342,11 +342,10 @@ export async function getListedTokens() {
     listedTokenIds.map(async _golfClubId => {
       const nft = await getNFTDetails(nftContract, _golfClubId)
       if (nft?.isListed) {
-        const { data } = await getTokenListingData(_golfClubId)
         result.push({
-          listing: data,
           nft,
           isMine: nft.owner === address,
+          listing: await getTokenListingData(_golfClubId),
         })
       }
     }),
@@ -492,7 +491,5 @@ export async function getTokenListingData(_golfClubId) {
   const contract = getReadContractMarketplace()
   const data = await contract.listings(_golfClubId)
 
-  return {
-    data: { ...data, price: ethers.utils.formatEther(data.price) },
-  }
+  return { ...data, price: ethers.utils.formatEther(data.price) }
 }
