@@ -44,7 +44,7 @@ const CollectionSlider = ({
   }
 
   const filtered = collection?.filter(golfClub => {
-    const canPlay = golfClub.secondsToPlay <= 0
+    const canPlay = golfClub?.gameplay?.secondsToPlay <= 0
     return onlyReady ? canPlay : true
   })
 
@@ -85,7 +85,7 @@ const CollectionSlider = ({
             <Slider {...settings} ref={ref => (slider.current = ref)}>
               {filtered?.map(golfClub => {
                 const isSelected = selectedGolfClubId === golfClub.id
-                const canPlay = golfClub.secondsToPlay <= 0
+                const canPlay = golfClub?.gameplay?.secondsToPlay <= 0
 
                 return (
                   <GolfClubNFTInteractiveCard

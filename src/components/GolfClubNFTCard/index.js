@@ -162,8 +162,9 @@ const SecondsToPlay = styled.div`
 `
 
 const GolfClubNFTCard = ({ golfClub, width, selected, onClick }) => {
-  const readyTime = moment.utc(golfClub.secondsToPlay * 1000).format('HH:mm:ss')
-  const canPlay = golfClub.secondsToPlay <= 0
+  const { secondsToPlay } = golfClub?.gameplay || {}
+  const readyTime = moment.utc(secondsToPlay * 1000).format('HH:mm:ss')
+  const canPlay = secondsToPlay <= 0
   const canPlayText = canPlay ? 'Ready!' : `Next game: ${readyTime}`
   const background = getBackgroundByRarity(golfClub.rarity)
   const onClickFunc = typeof onClick === 'function' ? onClick : () => {}
@@ -197,9 +198,7 @@ const GolfClubNFTCard = ({ golfClub, width, selected, onClick }) => {
           </div>
           <SecondsToPlay
             percentWidth={
-              canPlay
-                ? '100%'
-                : `${getSecondsToPlayPercentage(golfClub.secondsToPlay)}%`
+              canPlay ? '100%' : `${getSecondsToPlayPercentage(secondsToPlay)}%`
             }
             background={background}
           >

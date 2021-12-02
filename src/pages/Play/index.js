@@ -52,6 +52,7 @@ const Play = () => {
 
   function roundResultEffect(result) {
     const { _matchResult } = result
+    setSelectedGolfClubId(null)
     if (_matchResult === 1) {
       refreshRewards()
       openPopup(GAME_RESULT_VICTORY, () => (
@@ -105,7 +106,6 @@ const Play = () => {
       <GameSlider
         selectedGolfClubId={selectedGolfClubId}
         selectedGolfClub={getGolfClubById(selectedGolfClubId)}
-        resetSelectedGolfClubId={() => setSelectedGolfClubId(null)}
         refreshCollection={refreshCollection}
       />
       <CollectionSlider

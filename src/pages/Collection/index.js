@@ -161,7 +161,7 @@ const Collection = () => {
               golfClub={golfClub}
               onClickButton={
                 golfClub.isListed
-                  ? () => handleCancelListing(golfClub)
+                  ? () => handleCancelListing(golfClub, refreshCollection)
                   : () => handleSellNFT(golfClub)
               }
               onClickSecondaryButton={() => handleTransferNFT(golfClub)}

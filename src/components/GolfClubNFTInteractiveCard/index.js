@@ -23,7 +23,7 @@ const GolfClubNFTInteractiveCard = ({
   blockSecondaryButton = false,
   price,
 }) => {
-  const canPlay = golfClub.secondsToPlay <= 0
+  const canPlay = golfClub?.gameplay?.secondsToPlay <= 0
   const blockButton = (blockButtonIfNotReady && !canPlay) || blockPrimaryButton
 
   return (

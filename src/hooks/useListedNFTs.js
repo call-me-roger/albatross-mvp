@@ -17,10 +17,8 @@ const useListedNFTs = props => {
   async function refreshListings() {
     startLoading()
     const newListings = await getListedTokens()
-    if (newListings?.length > 0) {
-      const ordered = orderArrayByObjAttr(newListings, 'nft', 'id', true)
-      setListings(ordered)
-    }
+    const ordered = orderArrayByObjAttr(newListings, 'nft', 'id', true)
+    setListings(ordered)
     stopLoading()
   }
 

@@ -1,10 +1,11 @@
 import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { ruleOfThree } from 'utils/MathUtils'
+import { getGameplayDetails } from './Gameplay'
 import { convertABI, _callback } from './utils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
-  '0xC0a929eb438022Af84dA5ed5d88f22504713bcaA'
+  '0x31439410788f1cE0D21546D985132E30aafb8D5d'
 const SOL_NFT_ABI = [
   {
     inputs: [],
@@ -188,38 +189,6 @@ const SOL_NFT_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'decreaseDurability',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    name: 'durabilityDropRate',
-    outputs: [
-      {
-        internalType: 'uint8',
-        name: '',
-        type: 'uint8',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [],
     name: 'gameplayContractAddress',
     outputs: [
@@ -313,16 +282,6 @@ const SOL_NFT_ABI = [
         internalType: 'uint32',
         name: 'level',
         type: 'uint32',
-      },
-      {
-        internalType: 'uint32',
-        name: 'readyTime',
-        type: 'uint32',
-      },
-      {
-        internalType: 'uint16',
-        name: 'durability',
-        type: 'uint16',
       },
       {
         internalType: 'uint16',
@@ -534,19 +493,6 @@ const SOL_NFT_ABI = [
   {
     inputs: [
       {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'resetCooldown',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
         internalType: 'address',
         name: '_nftOwner',
         type: 'address',
@@ -616,25 +562,6 @@ const SOL_NFT_ABI = [
     name: 'safeTransferFrom',
     outputs: [],
     stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'secondsToPlay',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -801,19 +728,6 @@ const SOL_NFT_ABI = [
         type: 'uint256',
       },
     ],
-    name: 'triggerCooldown',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
     name: 'unlistTokenToSale',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -832,25 +746,6 @@ const SOL_NFT_ABI = [
     stateMutability: 'payable',
     type: 'function',
   },
-  {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    name: 'victoryProbability',
-    outputs: [
-      {
-        internalType: 'uint8',
-        name: '',
-        type: 'uint8',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
 ]
 // Dont forget to remove the duplicated safeTransferFrom, only the first one is needed
 export const GOLF_CLUB_CONTRACT_ABI = [
@@ -864,13 +759,11 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function approve(address to, uint256 tokenId)',
   'function balanceOf(address owner) view returns (uint256)',
   'function concatGolfClubName(uint256 _tokenId) pure returns (string)',
-  'function decreaseDurability(uint256 _golfClubId)',
-  'function durabilityDropRate(uint256) view returns (uint8)',
   'function gameplayContractAddress() view returns (address)',
   'function getApproved(uint256 tokenId) view returns (address)',
   'function getCollectionByOwner(address _owner) view returns (uint256[])',
   'function getRandGolfClubType(uint256 _nonce) view returns (uint16)',
-  'function golf_clubs(uint256) view returns (uint256 id, uint256 dna, uint32 level, uint32 readyTime, uint16 durability, uint16 winCount, uint16 lossCount, uint16 playType, uint8 rarity, string name)',
+  'function golf_clubs(uint256) view returns (uint256 id, uint256 dna, uint32 level, uint16 winCount, uint16 lossCount, uint16 playType, uint8 rarity, string name)',
   'function isApprovedForAll(address owner, address operator) view returns (bool)',
   'function isOwner() view returns (bool)',
   'function listTokenToSale(uint256 _golfClubId)',
@@ -883,10 +776,9 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function owner() view returns (address)',
   'function ownerOf(uint256 tokenId) view returns (address)',
   'function renounceOwnership()',
-  'function resetCooldown(uint256 _golfClubId) payable',
   'function safeOperatorTransfer(address _nftOwner, address _toAddress, uint256 _golfClubId)',
   'function safeTransferFrom(address from, address to, uint256 _golfClubId)',
-  'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
+  'function safeTransferFrom(address from, address to, uint256 _golfClubId, bytes _data)',
   'function sendEthFromContract(address _to, uint256 _amount)',
   'function sendEthToContract() payable',
   'function setApprovalForAll(address operator, bool approved)',
@@ -897,10 +789,8 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function tokenURI(uint256 _golfClubId) view returns (string)',
   'function transferFrom(address from, address to, uint256 tokenId)',
   'function transferOwnership(address newOwner)',
-  'function triggerCooldown(uint256 _golfClubId)',
   'function unlistTokenToSale(uint256 _golfClubId)',
   'function upgradeGolfClub(uint256 _golfClubId) payable',
-  'function victoryProbability(uint256) view returns (uint8)',
 ]
 
 export function log() {
@@ -960,15 +850,15 @@ export async function mint(
 
 export async function getNFTDetails(contract, _golfClubId) {
   const nftDetails = await contract.golf_clubs(_golfClubId)
-  const secondsToPlay = await contract.secondsToPlay(_golfClubId)
+  const gameplay = await getGameplayDetails(_golfClubId)
   return {
     ...nftDetails,
     id: _golfClubId,
     dna: nftDetails.dna.toString(),
-    secondsToPlay: secondsToPlay.toNumber(),
     tokenURI: await contract.tokenURI(_golfClubId),
     owner: await contract.ownerOf(_golfClubId),
     isListed: await contract.listedToSale(_golfClubId),
+    gameplay,
   }
 }
 

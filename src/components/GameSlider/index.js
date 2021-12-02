@@ -130,7 +130,6 @@ function getPlayButton(selected, onClick, isLoading) {
 const GameSlider = ({
   selectedGolfClubId,
   selectedGolfClub,
-  resetSelectedGolfClubId,
   refreshCollection,
 }) => {
   const {
@@ -179,7 +178,6 @@ const GameSlider = ({
         onError: () => playGameError(tryAgain),
         onSuccess: () => closePopup(START_GAME),
       })
-      resetSelectedGolfClubId()
       refreshCollection()
       refreshRounds()
     }

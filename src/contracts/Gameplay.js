@@ -2,7 +2,7 @@ import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { convertABI, _callback } from './utils'
 
-const GAMEPLAY_CONTRACT_ADDRESS = '0x572015a9C480bb749C423CB9c4f349301c69Cc2A'
+const GAMEPLAY_CONTRACT_ADDRESS = '0x869E1DdaD7D491BdDdc78590047a021f524522d4'
 const SOL_GAMEPLAY_ABI = [
   {
     anonymous: false,
@@ -81,6 +81,25 @@ const SOL_GAMEPLAY_ABI = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'durabilityDropRate',
+    outputs: [
+      {
+        internalType: 'uint8',
+        name: '',
+        type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'findGame',
     outputs: [],
@@ -101,6 +120,37 @@ const SOL_GAMEPLAY_ABI = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'getStats',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'uint256',
+            name: 'readyTime',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint16',
+            name: 'durability',
+            type: 'uint16',
+          },
+        ],
+        internalType: 'struct GolfClubGameplay.Stats',
+        name: '',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'getToken',
     outputs: [
@@ -108,6 +158,49 @@ const SOL_GAMEPLAY_ABI = [
         internalType: 'contract GolfClubNFT',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'golfClubStats',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: 'readyTime',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint16',
+        name: 'durability',
+        type: 'uint16',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'havePlayed',
+    outputs: [
+      {
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
       },
     ],
     stateMutability: 'view',
@@ -201,6 +294,25 @@ const SOL_GAMEPLAY_ABI = [
   {
     inputs: [
       {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'secondsToPlay',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'address payable',
         name: '_to',
         type: 'address',
@@ -232,6 +344,19 @@ const SOL_GAMEPLAY_ABI = [
       },
     ],
     name: 'setGolfClubContract',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'setGolfClubStats',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -287,6 +412,25 @@ const SOL_GAMEPLAY_ABI = [
     stateMutability: 'view',
     type: 'function',
   },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'victoryProbability',
+    outputs: [
+      {
+        internalType: 'uint8',
+        name: '',
+        type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
 ]
 
 const GAMEPLAY_ABI = [
@@ -294,26 +438,33 @@ const GAMEPLAY_ABI = [
   'event RoundPlayed(uint256 _golfClubId, uint256 _matchResult, uint256 _roundId, address _owner)',
   'function claimBalance(address) view returns (uint256)',
   'function claimRewards()',
+  'function durabilityDropRate(uint256) view returns (uint8)',
   'function findGame() payable',
   'function getGolfClubContractAddress() view returns (address)',
+  'function getStats(uint256 _golfClubId) view returns (tuple(uint256 readyTime, uint16 durability))',
   'function getToken() view returns (address)',
+  'function golfClubStats(uint256) view returns (uint256 readyTime, uint16 durability)',
+  'function havePlayed(uint256) view returns (bool)',
   'function isOwner() view returns (bool)',
   'function owner() view returns (address)',
   'function playRound(uint256 _golfClubId)',
   'function playerRounds(address, uint256) view returns (uint256 id, uint16 bonusPerkType, uint16 hole, bool victory)',
   'function renounceOwnership()',
+  'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
   'function sendEthFromContract(address _to, uint256 _amount)',
   'function sendEthToContract() payable',
   'function setGolfClubContract(address _contractAddress)',
+  'function setGolfClubStats(uint256 _golfClubId)',
   'function totalRounds(address) view returns (uint256)',
   'function transferOwnership(address newOwner)',
   'function victories(address) view returns (uint256)',
+  'function victoryProbability(uint256) view returns (uint8)',
 ]
 
 export function log() {
   console.log(convertABI(SOL_GAMEPLAY_ABI))
 }
-//log()
+log()
 
 export function getGameplaySignedContract(signer) {
   return new ethers.Contract(GAMEPLAY_CONTRACT_ADDRESS, GAMEPLAY_ABI, signer)
@@ -446,4 +597,12 @@ export async function claimRewards({ onSend, onSuccess, onError }) {
 
 export function getTournamentNumberByRoundIndex(_roundIndex) {
   return Math.ceil((((_roundIndex + 1) / 18) * 100) / 100)
+}
+
+export async function getGameplayDetails(_golfClubId) {
+  const contract = getGameplayReadContract()
+  const secondsToPlay = await contract.secondsToPlay(_golfClubId)
+  return {
+    secondsToPlay: secondsToPlay.toNumber(),
+  }
 }
