@@ -8,17 +8,22 @@ import { GAME_CLAIM_BALANCE } from 'store/application/types'
 const useClaimRewards = props => {
   const { initialFetch } = props || {}
 
-  const { balance, setBalance, isLoading, startLoading, stopLoading } =
-    useTournamentState()
+  const {
+    balance,
+    setBalance,
+    isBalanceLoading,
+    startBalanceLoading,
+    stopBalanceLoading,
+  } = useTournamentState()
   const { closePopup } = useApplicationState()
   const { waitingUser, onSendTx, errorPopup, successPopup } =
     useCallbackPopups()
 
   async function refreshRewards() {
-    startLoading()
+    startBalanceLoading()
     const resultClaimBalance = await getClaimBalance()
     setBalance(resultClaimBalance)
-    stopLoading()
+    stopBalanceLoading()
   }
 
   useEffect(() => {
@@ -53,7 +58,12 @@ const useClaimRewards = props => {
     })
   }
 
-  return { handleClaimRewards, balance, refreshRewards, isLoading }
+  return {
+    handleClaimRewards,
+    balance,
+    refreshRewards,
+    isLoading: isBalanceLoading,
+  }
 }
 
 export default useClaimRewards

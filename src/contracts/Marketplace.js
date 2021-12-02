@@ -317,13 +317,17 @@ export async function getListings() {
   const listedTokenIds = []
 
   if (address) {
-    const contract = getReadContractMarketplace()
-    const nextListingId = await contract.nextListingId()
-    const totalListings = nextListingId.toNumber()
-    for (let i = 0; i < totalListings; i++) {
-      const bigNumberTokenId = await contract.listingIndexToToken(i)
-      const tokenId = bigNumberTokenId.toNumber()
-      if (listedTokenIds.indexOf(tokenId) === -1) listedTokenIds.push(tokenId)
+    try {
+      const contract = getReadContractMarketplace()
+      const nextListingId = await contract.nextListingId()
+      const totalListings = nextListingId.toNumber()
+      for (let i = 0; i < totalListings; i++) {
+        const bigNumberTokenId = await contract.listingIndexToToken(i)
+        const tokenId = bigNumberTokenId.toNumber()
+        if (listedTokenIds.indexOf(tokenId) === -1) listedTokenIds.push(tokenId)
+      }
+    } catch (err) {
+      console.log({ err })
     }
   }
 

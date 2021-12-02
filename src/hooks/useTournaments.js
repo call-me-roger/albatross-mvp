@@ -42,9 +42,8 @@ const useTournaments = props => {
         }),
       )
       updateCurrentRound(newRoundIndex)
+      stopLoading()
     }
-
-    stopLoading()
   }
 
   useEffect(() => {

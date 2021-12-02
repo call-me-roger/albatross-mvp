@@ -8,8 +8,14 @@ import { ButtonPrimary } from 'components/Button'
 
 const Game = styled.div`
   width: 90vw;
+
   .slick-active {
     padding: 15px 15px;
+  }
+
+  .flex-container {
+    background-color: ${({ neverLoaded, theme }) =>
+      neverLoaded ? theme.bg2 : 'transparent'};
   }
 `
 const CollectionSlider = ({
@@ -44,7 +50,7 @@ const CollectionSlider = ({
 
   return (
     <Flex justifyContent="center">
-      <Game>
+      <Game neverLoaded={neverLoaded}>
         <ButtonPrimary
           onClick={toggleShow}
           style={{ width: '100px', padding: '2px', margin: '10px 0px' }}
@@ -60,7 +66,6 @@ const CollectionSlider = ({
         )}
         <Flex
           style={{
-            backgroundColor: neverLoaded ? '#333' : 'transparent',
             minHeight: '300px',
             minWidth: '100%',
             borderRadius: '15px',
@@ -68,6 +73,7 @@ const CollectionSlider = ({
           justifyContent="center"
           alignItems="center"
           flexDirection="column"
+          className="flex-container"
         >
           {isLoading && (
             <div align="center">

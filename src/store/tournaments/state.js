@@ -4,6 +4,7 @@ const tournamentState = createState({
   rounds: [],
   currentRoundIndex: 0,
   isLoading: false,
+  isBalanceLoading: false,
   neverLoaded: true,
   balance: 0,
 })
@@ -18,6 +19,9 @@ export function useTournamentState() {
     get isLoading() {
       return state.isLoading.get()
     },
+    get isBalanceLoading() {
+      return state.isBalanceLoading.get()
+    },
     get neverLoaded() {
       return state.neverLoaded.get()
     },
@@ -31,11 +35,17 @@ export function useTournamentState() {
       return state.currentRoundIndex.set(newIndex)
     },
     startLoading() {
-      state.isLoading.set(true)
+      return state.isLoading.set(true)
     },
-    stopLoading() {
+    stopLoading(arg) {
       state.isLoading.set(false)
       if (state.neverLoaded.get()) state.neverLoaded.set(false)
+    },
+    startBalanceLoading() {
+      return state.isBalanceLoading.set(true)
+    },
+    stopBalanceLoading() {
+      return state.isBalanceLoading.set(false)
     },
     setBalance(newBalance) {
       return state.balance.set(newBalance)

@@ -18,6 +18,11 @@ import useTournaments from 'hooks/useTournaments'
 
 const Game = styled.div`
   width: 90vw;
+
+  .flex-container {
+    background-color: ${({ neverLoaded, theme }) =>
+      neverLoaded ? theme.bg2 : 'transparent'};
+  }
 `
 
 const SliderWrapper = styled.div`
@@ -135,7 +140,6 @@ const GameSlider = ({
     isLoading,
     neverLoaded,
     startLoading,
-    stopLoading,
     refreshRounds,
     setDisplayRound,
     sliderRef,
@@ -178,7 +182,6 @@ const GameSlider = ({
       resetSelectedGolfClubId()
       refreshCollection()
       refreshRounds()
-      stopLoading()
     }
   }
 
@@ -251,7 +254,7 @@ const GameSlider = ({
 
   return (
     <Flex justifyContent="center">
-      <Game>
+      <Game neverLoaded={neverLoaded}>
         <Flex justifyContent="space-between" alignItems="center">
           <div>
             {noRounds ? (
@@ -270,7 +273,6 @@ const GameSlider = ({
         </Flex>
         <Flex
           style={{
-            backgroundColor: neverLoaded ? '#333' : 'transparent',
             minHeight: '350px',
             minWidth: '100%',
             borderRadius: '15px',
@@ -278,6 +280,7 @@ const GameSlider = ({
           justifyContent="center"
           alignItems="center"
           flexDirection="column"
+          className="flex-container"
         >
           {isLoading && (
             <div align="center">
