@@ -11,15 +11,11 @@ contract GolfClubFactory is GolfClubUtils, Ownable {
 
     uint256 dnaDigits = 16;
     uint256 dnaModulus = 10**dnaDigits;
-    uint256 golfClubCooldownTime = 1 days;
     uint256 randNonce = 0;
-    uint16 maxDurability = 1000;
     uint16[] possibleGolfClubPerk = [100, 200, 300, 400]; // Long, Short, Precision, Obstacle
     uint8[] rarityProbability = [0, 55, 74, 88, 97]; // Common, Uncommon, Rare, Epic, Legendary
-    uint8[] public victoryProbability = [45, 50, 57, 68, 80]; // Common, Uncommon, Rare, Epic, Legendary
-    uint8[] public durabilityDropRate = [5, 4, 3, 2, 1]; // Common, Uncommon, Rare, Epic, Legendary
     uint8 maxUpgradableRarity = 3;
-    
+
     string[] private images = [
         "QmUEDKKYBKGd7YFKwWDNUbMgvDwCvEHDW9A7N6YDdNJ4dG",
         "QmPi3V2hRGrKE2biuNZz52ZBxABykgeUvG7sgdRY3jzBxy",
@@ -34,8 +30,6 @@ contract GolfClubFactory is GolfClubUtils, Ownable {
         uint256 id;
         uint256 dna;
         uint32 level;
-        uint32 readyTime;
-        uint16 durability;
         uint16 winCount;
         uint16 lossCount;
         uint16 playType;
@@ -54,18 +48,7 @@ contract GolfClubFactory is GolfClubUtils, Ownable {
         uint8 _rarity = _generateGolfClubRarity();
 
         golf_clubs.push(
-            GolfClub(
-                _id,
-                _dna,
-                1,
-                uint32(block.timestamp),
-                maxDurability,
-                0,
-                0,
-                _playType,
-                _rarity,
-                _name
-            )
+            GolfClub(_id, _dna, 1, 0, 0, _playType, _rarity, _name)
         );
     }
 
@@ -80,7 +63,9 @@ contract GolfClubFactory is GolfClubUtils, Ownable {
 
     function getRandGolfClubType(uint256 _nonce) public view returns (uint16) {
         return
-            possibleGolfClubPerk[_randMod(100, _nonce) % possibleGolfClubPerk.length];
+            possibleGolfClubPerk[
+                _randMod(100, _nonce) % possibleGolfClubPerk.length
+            ];
     }
 
     function _generateGolfClubRarity() private view returns (uint8) {
@@ -92,24 +77,29 @@ contract GolfClubFactory is GolfClubUtils, Ownable {
         return 0; // 56%
     }
 
-    function _randMod(uint256 _modulus, uint256 _nonce) internal view returns (uint256) {
+    function _randMod(uint256 _modulus, uint256 _nonce)
+        internal
+        view
+        returns (uint256)
+    {
         return
             uint256(
-                keccak256(
-                    abi.encodePacked(block.timestamp, msg.sender, _nonce)
-                )
+                keccak256(abi.encodePacked(block.timestamp, msg.sender, _nonce))
             ) % _modulus;
     }
 
-    function createCollectableGolfClub(uint256 _tokenId) internal returns (string storage) {
+    function createCollectableGolfClub(uint256 _tokenId)
+        internal
+        returns (string storage)
+    {
         string memory _name = concatGolfClubName(_tokenId);
         randNonce = randNonce.add(1);
         uint16 _playType = getRandGolfClubType(randNonce);
         uint256 randDna = _generateRandomDna(_name);
         randDna = randDna - (randDna % 100);
         _createGolfClub(_tokenId, _name, _playType, randDna);
-        
-        uint choosenImage = randDna % images.length;
+
+        uint256 choosenImage = randDna % images.length;
         return images[choosenImage];
     }
 }
