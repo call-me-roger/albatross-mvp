@@ -5,7 +5,7 @@ import { getGameplayDetails } from './Gameplay'
 import { convertABI, _callback } from './utils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
-  '0x31439410788f1cE0D21546D985132E30aafb8D5d'
+  '0x95c9485dc3E96edF24a4ec904cD5a8054374a9B0'
 const SOL_NFT_ABI = [
   {
     inputs: [],
@@ -199,6 +199,19 @@ const SOL_NFT_ABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_to',
+        type: 'address',
+      },
+    ],
+    name: 'gameplaySafeMintMint',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -408,6 +421,19 @@ const SOL_NFT_ABI = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'maxPublicCollection',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'address',
@@ -478,6 +504,19 @@ const SOL_NFT_ABI = [
         internalType: 'address',
         name: '',
         type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'publicMintCount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -685,6 +724,19 @@ const SOL_NFT_ABI = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'totalMintCount',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'address',
@@ -743,7 +795,7 @@ const SOL_NFT_ABI = [
     ],
     name: 'upgradeGolfClub',
     outputs: [],
-    stateMutability: 'payable',
+    stateMutability: 'nonpayable',
     type: 'function',
   },
 ]
@@ -760,6 +812,7 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function balanceOf(address owner) view returns (uint256)',
   'function concatGolfClubName(uint256 _tokenId) pure returns (string)',
   'function gameplayContractAddress() view returns (address)',
+  'function gameplaySafeMintMint(address _to)',
   'function getApproved(uint256 tokenId) view returns (address)',
   'function getCollectionByOwner(address _owner) view returns (uint256[])',
   'function getRandGolfClubType(uint256 _nonce) view returns (uint16)',
@@ -770,15 +823,16 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function listedToSale(uint256) view returns (bool)',
   'function maxCollection() view returns (uint256)',
   'function maxMintPerWallet() view returns (uint256)',
+  'function maxPublicCollection() view returns (uint256)',
   'function mint(address _to, uint256 _quantity) payable',
   'function name() view returns (string)',
   'function nextTokenId() view returns (uint256)',
   'function owner() view returns (address)',
   'function ownerOf(uint256 tokenId) view returns (address)',
+  'function publicMintCount() view returns (uint256)',
   'function renounceOwnership()',
   'function safeOperatorTransfer(address _nftOwner, address _toAddress, uint256 _golfClubId)',
   'function safeTransferFrom(address from, address to, uint256 _golfClubId)',
-  'function safeTransferFrom(address from, address to, uint256 _golfClubId, bytes _data)',
   'function sendEthFromContract(address _to, uint256 _amount)',
   'function sendEthToContract() payable',
   'function setApprovalForAll(address operator, bool approved)',
@@ -787,10 +841,11 @@ export const GOLF_CLUB_CONTRACT_ABI = [
   'function supportsInterface(bytes4 interfaceId) view returns (bool)',
   'function symbol() view returns (string)',
   'function tokenURI(uint256 _golfClubId) view returns (string)',
+  'function totalMintCount() view returns (uint256)',
   'function transferFrom(address from, address to, uint256 tokenId)',
   'function transferOwnership(address newOwner)',
   'function unlistTokenToSale(uint256 _golfClubId)',
-  'function upgradeGolfClub(uint256 _golfClubId) payable',
+  'function upgradeGolfClub(uint256 _golfClubId)',
 ]
 
 export function log() {

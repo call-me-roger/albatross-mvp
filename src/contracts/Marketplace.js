@@ -5,7 +5,7 @@ import { getNFTReadContract } from './GolfClub'
 import { convertABI, _callback } from './utils'
 
 const MARKETPLACE_CONTRACT_ADDRESS =
-  '0xc90E23F487f1c4162E01aDFaf5fDE3b190AC12B8'
+  '0xdce3Af53eCF0Dd87BEf141A7A783877fa5732ef1'
 const SOL_MARKETPLACE_ABI = [
   {
     anonymous: false,

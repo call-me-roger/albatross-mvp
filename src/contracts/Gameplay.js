@@ -2,7 +2,7 @@ import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { convertABI, _callback } from './utils'
 
-const GAMEPLAY_CONTRACT_ADDRESS = '0xba442a9FbCC30b79526f720B90219665aABBBabB'
+const GAMEPLAY_CONTRACT_ADDRESS = '0x6F9C83E59CF1fEfDB3eedDFdF4063f64A28435Bc'
 const SOL_GAMEPLAY_ABI = [
   {
     anonymous: false,
@@ -93,6 +93,13 @@ const SOL_GAMEPLAY_ABI = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'claimNFT',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'address',
@@ -112,8 +119,47 @@ const SOL_GAMEPLAY_ABI = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'claimResetCooldown',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'claimResetDurability',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'claimRewards',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '_golfClubId',
+        type: 'uint256',
+      },
+    ],
+    name: 'claimUpgrade',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -199,7 +245,7 @@ const SOL_GAMEPLAY_ABI = [
             type: 'uint16',
           },
         ],
-        internalType: 'struct GolfClubGameplay.Stats',
+        internalType: 'struct GolfClubRewards.Stats',
         name: '',
         type: 'tuple',
       },
@@ -343,13 +389,6 @@ const SOL_GAMEPLAY_ABI = [
   },
   {
     inputs: [],
-    name: 'randomRoulletPrize',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
     name: 'renounceOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -451,14 +490,8 @@ const SOL_GAMEPLAY_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'uint256',
-        name: '_golfClubId',
-        type: 'uint256',
-      },
-    ],
-    name: 'setGolfClubStats',
+    inputs: [],
+    name: 'testBalance',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -559,8 +592,12 @@ const GAMEPLAY_ABI = [
   'event RoulletPrize(address _owner, uint256 prizeId)',
   'event RoundPlayed(uint256 _golfClubId, uint256 _matchResult, uint256 _roundId, address _owner)',
   'function claimBalance(address) view returns (uint256)',
+  'function claimNFT()',
   'function claimNFTBalance(address) view returns (uint256)',
+  'function claimResetCooldown(uint256 _golfClubId)',
+  'function claimResetDurability(uint256 _golfClubId)',
   'function claimRewards()',
+  'function claimUpgrade(uint256 _golfClubId)',
   'function durabilityDropRate(uint256) view returns (uint8)',
   'function energyBalance(address) view returns (uint256)',
   'function findGame() payable',
@@ -573,7 +610,6 @@ const GAMEPLAY_ABI = [
   'function owner() view returns (address)',
   'function playRound(uint256 _golfClubId)',
   'function playerRounds(address, uint256) view returns (uint256 id, uint16 bonusPerkType, uint16 hole, bool victory)',
-  'function randomRoulletPrize()',
   'function renounceOwnership()',
   'function repairBalance(address) view returns (uint256)',
   'function roulettePrizePercentages(uint256) view returns (uint8)',
@@ -581,7 +617,7 @@ const GAMEPLAY_ABI = [
   'function sendEthFromContract(address _to, uint256 _amount)',
   'function sendEthToContract() payable',
   'function setGolfClubContract(address _contractAddress)',
-  'function setGolfClubStats(uint256 _golfClubId)',
+  'function testBalance()',
   'function totalRounds(address) view returns (uint256)',
   'function transferOwnership(address newOwner)',
   'function upgradeBalance(address) view returns (uint256)',
@@ -632,6 +668,25 @@ export async function getRounds() {
   return { rounds: result, currentRoundIndex }
 }
 
+export async function getRoulletteBalances() {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    const contract = getGameplayReadContract()
+    const upgradeBalance = await contract.upgradeBalance(address)
+    const claimNFTBalance = await contract.claimNFTBalance(address)
+    const energyBalance = await contract.upgradeBalance(address)
+    const repairBalance = await contract.repairBalance(address)
+
+    return {
+      upgradeBalance: upgradeBalance.toNumber(),
+      claimNFTBalance: claimNFTBalance.toNumber(),
+      energyBalance: energyBalance.toNumber(),
+      repairBalance: repairBalance.toNumber(),
+    }
+  }
+}
+
 export async function findGame({ onSend, onSuccess, onError }) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
@@ -659,7 +714,6 @@ export async function playGame(_golfClubId, { onSend, onSuccess, onError }) {
   const address = await signer.getAddress()
   const result = []
   if (address) {
-    console.log({ address })
     try {
       const contract = getGameplaySignedContract(signer)
       const sent = await contract.playRound(_golfClubId)
@@ -694,6 +748,79 @@ export async function claimRewards({ onSend, onSuccess, onError }) {
     try {
       const contract = getGameplaySignedContract(signer)
       const sent = await contract.claimRewards()
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+    }
+  }
+}
+
+export async function claimNFT({ onSend, onSuccess, onError }) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getGameplaySignedContract(signer)
+      const sent = await contract.claimNFT()
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+    }
+  }
+}
+
+export async function claimUpgrade(
+  _golfClubId,
+  { onSend, onSuccess, onError },
+) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getGameplaySignedContract(signer)
+      const sent = await contract.claimUpgrade(_golfClubId)
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+    }
+  }
+}
+
+export async function claimResetCooldown(
+  _golfClubId,
+  { onSend, onSuccess, onError },
+) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getGameplaySignedContract(signer)
+      const sent = await contract.claimResetCooldown(_golfClubId)
+      _callback(onSend, { tx: sent })
+      await sent.wait(1)
+      _callback(onSuccess, { tx: sent })
+    } catch (err) {
+      _callback(onError, err)
+    }
+  }
+}
+
+export async function claimResetDurability(
+  _golfClubId,
+  { onSend, onSuccess, onError },
+) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    try {
+      const contract = getGameplaySignedContract(signer)
+      const sent = await contract.claimResetDurability(_golfClubId)
       _callback(onSend, { tx: sent })
       await sent.wait(1)
       _callback(onSuccess, { tx: sent })
