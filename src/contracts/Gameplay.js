@@ -2,7 +2,7 @@ import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { convertABI, _callback } from './utils'
 
-const GAMEPLAY_CONTRACT_ADDRESS = '0xc8dBfa5c3Ef76f512e9E1092B6Bc76Ff1E7F31bc'
+const GAMEPLAY_CONTRACT_ADDRESS = '0xba442a9FbCC30b79526f720B90219665aABBBabB'
 const SOL_GAMEPLAY_ABI = [
   {
     anonymous: false,
@@ -659,6 +659,7 @@ export async function playGame(_golfClubId, { onSend, onSuccess, onError }) {
   const address = await signer.getAddress()
   const result = []
   if (address) {
+    console.log({ address })
     try {
       const contract = getGameplaySignedContract(signer)
       const sent = await contract.playRound(_golfClubId)
