@@ -1,36 +1,8 @@
 pragma solidity ^0.8.0;
 
-import "./2_GolfClubPayments.sol";
+import "./2_GolfClubRewards.sol";
 
-interface GolfClubNFT {
-    function ownerOf(uint256 tokenId) external view returns (address);
-
-    function golf_clubs(uint256 tokenId)
-        external
-        view
-        returns (
-            uint256 id,
-            uint256 dna,
-            uint32 level,
-            uint16 winCount,
-            uint16 lossCount,
-            uint16 playType,
-            uint8 rarity,
-            string memory name
-        );
-
-    function durabilityDropRate(uint256) external view returns (uint8);
-
-    function triggerCooldown(uint256 tokenId) external;
-
-    function addGolfClubWin(uint256 tokenId) external;
-
-    function addGolfClubLoss(uint256 tokenId) external;
-
-    function getRandGolfClubType(uint256 _nonce) external view returns (uint16);
-}
-
-contract GolfClubGameplay is GolfClubPayments {
+contract GolfClubGameplay is GolfClubRewards {
     using SafeMath for uint256;
     using SafeMath32 for uint32;
     using SafeMath16 for uint16;
@@ -47,7 +19,6 @@ contract GolfClubGameplay is GolfClubPayments {
     uint256 golfClubCooldownTime = 1 days;
     uint256 bonusForPerk = 1;
     uint256 nextRoundId = 0;
-    uint256 randNonce = 0;
     uint16 roundsPerGame = 18;
     uint16 maxDurability = 1000;
     uint8[] public victoryProbability = [45, 50, 57, 68, 80]; // Common, Uncommon, Rare, Epic, Legendary
@@ -126,16 +97,6 @@ contract GolfClubGameplay is GolfClubPayments {
             .sub(dropDurability);
     }
 
-    function _randMod(uint256 _modulus) internal returns (uint256) {
-        randNonce = randNonce.add(1);
-        return
-            uint256(
-                keccak256(
-                    abi.encodePacked(block.timestamp, msg.sender, randNonce)
-                )
-            ) % _modulus;
-    }
-
     function _getMatchResult(uint256 _golfClubId, Round memory _round)
         private
         returns (uint256)
@@ -164,12 +125,11 @@ contract GolfClubGameplay is GolfClubPayments {
         uint256 _matchResult,
         Round memory _currentRound
     ) private {
-        
         if (havePlayed[_golfClubId] == false) {
             golfClubStats[_golfClubId] = Stats(block.timestamp, maxDurability);
             havePlayed[_golfClubId] = true;
         }
-        (, , , , , , uint8 _rarity , ) = getToken().golf_clubs(_golfClubId);
+        (, , , , , , uint8 _rarity, ) = getToken().golf_clubs(_golfClubId);
         _decreaseDurability(_golfClubId, durabilityDropRate[_rarity]); // Decrease current durability
         _triggerCooldown(_golfClubId); // 24h cooldown
 
