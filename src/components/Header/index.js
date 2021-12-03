@@ -1,6 +1,6 @@
 import React from 'react'
 import useScrollPosition from '@react-hook/window-scroll'
-import { Text } from 'rebass'
+import { Flex, Text } from 'rebass'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import { Moon, Sun } from 'react-feather'
@@ -11,12 +11,12 @@ import { Web3StatusConnected } from 'components/Web3Status'
 import { useApplicationState } from 'store/application/state'
 import AccountDetails from 'components/AccountDetails'
 import { parseENSAddress } from 'utils/parseENSAddress'
-import { BuyDoric } from 'components/BuyDoric'
 import { Grid } from 'react-feather'
 import { HideSmall, SmallOnly } from '../../theme'
 import { useLocalState } from 'store/local/state'
 import { ACCOUNT_DETAILS } from 'store/application/types'
 import { useAccountState } from 'store/account/state'
+import HeaderRoulletRewards from 'components/HeaderRoulletRewards'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -142,13 +142,6 @@ const AccountElement = styled.div`
   }
 `
 
-const BuyDoricElement = styled.div`
-  display: flex;
-  white-space: nowrap;
-  width: 100%;
-  cursor: pointer;
-`
-
 const Title = styled.a`
   display: flex;
   align-items: center;
@@ -237,10 +230,9 @@ export const StyledMenuButton = styled(ExternalLink).attrs({
 function Header() {
   const { isDarkMode, toggleDarkMode } = useLocalState()
   const { openPopup, closePopup } = useApplicationState()
+  const { isLogged, address, balance } = useAccountState()
 
   const scrollY = useScrollPosition()
-
-  const { isLogged, address, balance } = useAccountState()
 
   return (
     <HeaderFrame showBackground={scrollY > 45}>
@@ -279,34 +271,34 @@ function Header() {
 
       <HeaderControls>
         {isLogged && (
-          <HeaderElement>
-            <BuyDoricElement>
-              <BuyDoric />
-            </BuyDoricElement>
-            <AccountElement
-              active
-              style={{ pointerEvents: 'auto' }}
-              onClick={() =>
-                openPopup(ACCOUNT_DETAILS, () => (
-                  <AccountDetails
-                    toggleWalletModal={() => closePopup(ACCOUNT_DETAILS)}
-                  />
-                ))
-              }
-            >
-              <BalanceText
-                style={{ flexShrink: 0 }}
-                pl="0.75rem"
-                pr="0.5rem"
-                fontWeight={500}
+          <Flex style={{ width: '100%' }} flexDirection="column">
+            <HeaderElement>
+              <AccountElement
+                active
+                style={{ pointerEvents: 'auto' }}
+                onClick={() =>
+                  openPopup(ACCOUNT_DETAILS, () => (
+                    <AccountDetails
+                      toggleWalletModal={() => closePopup(ACCOUNT_DETAILS)}
+                    />
+                  ))
+                }
               >
-                {balance} DRC
-              </BalanceText>
-              <Web3StatusConnected id="web3-status-connected">
-                <Text>{parseENSAddress(address)}</Text>
-              </Web3StatusConnected>
-            </AccountElement>
-          </HeaderElement>
+                <BalanceText
+                  style={{ flexShrink: 0 }}
+                  pl="0.75rem"
+                  pr="0.5rem"
+                  fontWeight={500}
+                >
+                  {balance} DRC
+                </BalanceText>
+                <Web3StatusConnected id="web3-status-connected">
+                  <Text>{parseENSAddress(address)}</Text>
+                </Web3StatusConnected>
+              </AccountElement>
+            </HeaderElement>
+            <HeaderRoulletRewards />
+          </Flex>
         )}
 
         <HeaderElementWrap>

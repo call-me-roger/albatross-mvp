@@ -22,6 +22,7 @@ import { Flex } from 'rebass'
 import useCallbackPopups from 'hooks/useCallbackPopups'
 import useGolfClubCollection from 'hooks/useGolfClubCollection'
 import useMarketplaceActions from 'hooks/useMarketplaceActions'
+import Tooltip from 'components/Tooltip'
 
 const Display = styled.div`
   padding: 15px;
@@ -171,19 +172,23 @@ const Collection = () => {
                 </>
               }
               buttonText={
-                <font
-                  title={
-                    !isApproved && 'First approve the marketplace to sell NFTs.'
-                  }
+                <Tooltip
+                  active={!isApproved}
+                  overflow="First approve the marketplace to sell NFTs."
                 >
-                  {golfClub.isListed && 'Cancel listing'}
-                  {!golfClub.isListed && (
-                    <>
-                      <DollarSign size="15px" style={{ marginRight: '5px' }} />{' '}
-                      Sell
-                    </>
-                  )}
-                </font>
+                  <font>
+                    {golfClub.isListed && 'Cancel listing'}
+                    {!golfClub.isListed && (
+                      <>
+                        <DollarSign
+                          size="15px"
+                          style={{ marginRight: '5px' }}
+                        />{' '}
+                        Sell
+                      </>
+                    )}
+                  </font>
+                </Tooltip>
               }
               blockPrimaryButton={!isApproved}
               width="15.6%"

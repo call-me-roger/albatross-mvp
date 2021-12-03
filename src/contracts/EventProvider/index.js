@@ -12,6 +12,7 @@ import { TRANSFER_NFT } from 'store/application/types'
 import GolfClubNFTCard from 'components/GolfClubNFTCard'
 import useClaimOwnerBalance from 'hooks/useClaimOwnerBalance'
 import { listenRoulletReward } from 'contracts/Gameplay'
+import useRouletteBalances from 'hooks/useRoulletBalances'
 
 const EventProvider = () => {
   const { isLoading, refreshCollection } = useGolfClubCollection({
@@ -27,6 +28,9 @@ const EventProvider = () => {
     setBalance,
   } = useAccountState()
   const { refreshBalance: refreshClaimOwnerBalance } = useClaimOwnerBalance({
+    initialFetch: true,
+  })
+  const { refreshBalance: refreshRoulletBalances } = useRouletteBalances({
     initialFetch: true,
   })
 
@@ -55,6 +59,7 @@ const EventProvider = () => {
   }
 
   function roulletRewardEvent({ _prizeId }) {
+    refreshRoulletBalances()
     let title = 'Nothing!'
 
     if (_prizeId === 5) title = 'UPGRADE GOLF CLUB'
