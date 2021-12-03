@@ -191,10 +191,10 @@
 			]
 		},
 		"2_GolfClubRewards.sol": {
-			"keccak256": "0xb0d2619f87c71f3e3240e7d1760519726773c103916c0a4a7ffc68a2d64569b1",
+			"keccak256": "0x98dd46fd85d6a7a05bea47b655d15c06ddd4a0ec9f5fa67205582d77d5e6d625",
 			"urls": [
-				"bzz-raw://956e76a323e050c412a512b74e4d73c63f38cf5f9aa747a505c4319e579fb3e4",
-				"dweb:/ipfs/QmR85oHJv1amWr62HeucvX9xfEHC1PbHqzTw8YiFupivAV"
+				"bzz-raw://bd189e7e263269bc3e5ac0b6cac8247df58f7d53208954109cc1da6e71ca7228",
+				"dweb:/ipfs/QmaPNy86UYbqtX3uLtt8aiiPSesoZeZjSfxcCfNUWGGMhj"
 			]
 		},
 		"_Ownable.sol": {

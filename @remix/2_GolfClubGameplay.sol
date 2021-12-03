@@ -139,6 +139,8 @@ contract GolfClubGameplay is GolfClubRewards {
             _currentRound.id,
             msg.sender
         ); // Send event to frontend, filterable by _owner = msg.sender*/
+
+        if (_currentRound.hole == roundsPerGame) randomRoulletPrize();
     }
 
     function findGame() external payable {

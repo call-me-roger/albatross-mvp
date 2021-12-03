@@ -58,7 +58,7 @@ contract GolfClubRewards is GolfClubPayments {
             ) % _modulus;
     }
 
-    function randomRoulletPrize() external {
+    function randomRoulletPrize() internal {
         uint256 rand = _randMod(100);
         if (rand >= roulettePrizePercentages[5]) {
             upgradeBalance[msg.sender] = upgradeBalance[msg.sender].add(1); // 2%
