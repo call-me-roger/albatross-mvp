@@ -599,10 +599,10 @@
 	},
 	"sources": {
 		"2_GolfClubGameplay.sol": {
-			"keccak256": "0x0a05d6c7aead77a5c4c16d1e0e81dbd937f8e10bb02adb8a9b05173618f55003",
+			"keccak256": "0x86e1fc590be98d4efe0264acde3301b740f321ab278d1800049cc5047779c4fb",
 			"urls": [
-				"bzz-raw://7af8dbadddf388b7b0505affea29904cbeacfb7e399218f063d8f72f193fe5de",
-				"dweb:/ipfs/QmW8AdXZnGt5BMSPP7669LXN1Cy7dYpPh911Lm7Tof7YF7"
+				"bzz-raw://fed282b39d0a5731f54eddfb154821733a71df151aacfd0b86fdb80e380ab808",
+				"dweb:/ipfs/QmPxbNBwthuxF1tayFVhFgfKKrmDnBHkBpyqbeEznkpQ2j"
 			]
 		},
 		"2_GolfClubPayments.sol": {
