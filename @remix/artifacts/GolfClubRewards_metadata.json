@@ -63,6 +63,13 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "claimNFT",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -82,8 +89,47 @@
 				"type": "function"
 			},
 			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_golfClubId",
+						"type": "uint256"
+					}
+				],
+				"name": "claimResetCooldown",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_golfClubId",
+						"type": "uint256"
+					}
+				],
+				"name": "claimResetDurability",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
 				"inputs": [],
 				"name": "claimRewards",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_golfClubId",
+						"type": "uint256"
+					}
+				],
+				"name": "claimUpgrade",
 				"outputs": [],
 				"stateMutability": "nonpayable",
 				"type": "function"
@@ -102,6 +148,106 @@
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getGolfClubContractAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_golfClubId",
+						"type": "uint256"
+					}
+				],
+				"name": "getStats",
+				"outputs": [
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "readyTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint16",
+								"name": "durability",
+								"type": "uint16"
+							}
+						],
+						"internalType": "struct GolfClubRewards.Stats",
+						"name": "",
+						"type": "tuple"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getToken",
+				"outputs": [
+					{
+						"internalType": "contract GolfClubNFT",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "golfClubStats",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "readyTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint16",
+						"name": "durability",
+						"type": "uint16"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "havePlayed",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
 					}
 				],
 				"stateMutability": "view",
@@ -207,6 +353,19 @@
 				"inputs": [
 					{
 						"internalType": "address",
+						"name": "_contractAddress",
+						"type": "address"
+					}
+				],
+				"name": "setGolfClubContract",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
 						"name": "newOwner",
 						"type": "address"
 					}
@@ -295,10 +454,10 @@
 			]
 		},
 		"2_GolfClubRewards.sol": {
-			"keccak256": "0x98dd46fd85d6a7a05bea47b655d15c06ddd4a0ec9f5fa67205582d77d5e6d625",
+			"keccak256": "0x0c3356d08769bf45cfa11507562d12f2f4748b2ebbdcb82c45d1af2ad2252b6f",
 			"urls": [
-				"bzz-raw://bd189e7e263269bc3e5ac0b6cac8247df58f7d53208954109cc1da6e71ca7228",
-				"dweb:/ipfs/QmaPNy86UYbqtX3uLtt8aiiPSesoZeZjSfxcCfNUWGGMhj"
+				"bzz-raw://fe76b957c69f394604b779b814c74d5a7bcc19bfb5b98ff4d105f6498ecd6dcd",
+				"dweb:/ipfs/Qmd9oJHKohKAZGT6BQ8b7tnVchiCdSQ3XEof9reTRozNfP"
 			]
 		},
 		"_Ownable.sol": {

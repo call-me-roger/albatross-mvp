@@ -13,9 +13,12 @@ contract GolfClubERC721 is GolfClubFactory, ERC721URIStorage {
     address public gameplayContractAddress;
     uint256 public nextTokenId = 0;
     uint256 public maxMintPerWallet = 5;
-    uint256 public maxCollection = 5000;
+    uint256 public maxCollection = 10000;
+    uint256 public maxPublicCollection = 5000;
+    uint256 public publicMintCount = 0;
+    uint256 public totalMintCount = 0;
+
     uint256 mintFee = 1 ether;
-    uint256 upgradeGolfClubFee = 0.05 ether;
     string baseURI = "https://gateway.pinata.cloud/ipfs/";
     mapping(uint256 => string) private _tokenURIs;
     mapping(uint256 => bool) public listedToSale;
@@ -71,25 +74,40 @@ contract GolfClubERC721 is GolfClubFactory, ERC721URIStorage {
         return result;
     }
 
+    function _mintSetToken(address _to) private {
+        uint256 newTotal = totalMintCount.add(1);
+        require(
+            newTotal <= maxCollection,
+            "Exceeds the 10000 max collection limit."
+        );
+        _safeMint(_to, nextTokenId);
+        string memory ipfs = createCollectableGolfClub(nextTokenId);
+        _setTokenURI(nextTokenId, ipfs);
+        nextTokenId = nextTokenId.add(1);
+        totalMintCount = totalMintCount.add(1);
+    }
+
     function mint(address _to, uint256 _quantity) external payable {
         require(
             _quantity > 0 && _quantity <= maxMintPerWallet,
             "Can only mint 5 Golf Clubs per wallet."
         );
-        uint256 newTotal = _quantity.add(golf_clubs.length);
+        uint256 newTotal = _quantity.add(publicMintCount);
         require(
-            newTotal <= maxCollection,
-            "Exceeds the 5000 max collection limit."
+            newTotal <= maxPublicCollection,
+            "Exceeds the 5000 max public collection limit."
         );
         uint256 _qtyMintingFee = mintFee.mul(_quantity);
         require(msg.value == _qtyMintingFee, "Value sent is not correct");
 
         for (uint256 i = 0; i < _quantity; i++) {
-            _safeMint(_to, nextTokenId);
-            string memory ipfs = createCollectableGolfClub(nextTokenId);
-            _setTokenURI(nextTokenId, ipfs);
-            nextTokenId = nextTokenId.add(1);
+            _mintSetToken(_to);
+            publicMintCount = publicMintCount.add(1);
         }
+    }
+
+    function gameplaySafeMintMint(address _to) external onlyGameplayContract {
+        _mintSetToken(_to);
     }
 
     function tokenURI(uint256 _golfClubId)
@@ -209,10 +227,8 @@ contract GolfClubERC721 is GolfClubFactory, ERC721URIStorage {
 
     function upgradeGolfClub(uint256 _golfClubId)
         external
-        payable
-        onlyOwnerOf(_golfClubId)
+        onlyGameplayContract
     {
-        require(msg.value == upgradeGolfClubFee, "Value sent is not correct.");
         require(
             golf_clubs[_golfClubId].rarity < maxUpgradableRarity,
             "Your Golf Club can't upgrade rarity."

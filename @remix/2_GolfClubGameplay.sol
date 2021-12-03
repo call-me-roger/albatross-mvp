@@ -14,20 +14,13 @@ contract GolfClubGameplay is GolfClubRewards {
         address _owner
     );
 
-    address golfClubContractAddress;
     uint256 gameFee = 0.015 ether;
     uint256 golfClubCooldownTime = 1 days;
     uint256 bonusForPerk = 1;
     uint256 nextRoundId = 0;
     uint16 roundsPerGame = 18;
-    uint16 maxDurability = 1000;
     uint8[] public victoryProbability = [45, 50, 57, 68, 80]; // Common, Uncommon, Rare, Epic, Legendary
-    uint8[] public durabilityDropRate = [5, 4, 3, 2, 1]; // Common, Uncommon, Rare, Epic, Legendary
-
-    struct Stats {
-        uint256 readyTime;
-        uint16 durability;
-    }
+    uint8[] public durabilityDropRate = [6, 5, 4, 3, 2]; // Common, Uncommon, Rare, Epic, Legendary
 
     struct Round {
         uint256 id;
@@ -36,39 +29,9 @@ contract GolfClubGameplay is GolfClubRewards {
         bool victory;
     }
 
-    mapping(uint256 => bool) public havePlayed;
     mapping(address => uint256) public victories;
     mapping(address => uint256) public totalRounds;
     mapping(address => Round[]) public playerRounds;
-    Stats[10000] public golfClubStats;
-
-    modifier onlyOwnerOf(uint256 _golfClubId) {
-        require(
-            msg.sender == getToken().ownerOf(_golfClubId),
-            "Not the NFT owner."
-        );
-        _;
-    }
-
-    function setGolfClubContract(address _contractAddress) external onlyOwner {
-        golfClubContractAddress = _contractAddress;
-    }
-
-    function getGolfClubContractAddress() public view returns (address) {
-        return golfClubContractAddress;
-    }
-
-    function getToken() public view returns (GolfClubNFT) {
-        return GolfClubNFT(golfClubContractAddress);
-    }
-
-    function getStats(uint256 _golfClubId) public view returns (Stats memory) {
-        if (havePlayed[_golfClubId] == false) {
-            return Stats(block.timestamp, maxDurability);
-        }
-
-        return golfClubStats[_golfClubId];
-    }
 
     modifier canPlayWithGolfClub(uint256 _golfClubId) {
         (, , , , , , uint8 _rarity, ) = getToken().golf_clubs(_golfClubId);
@@ -186,9 +149,5 @@ contract GolfClubGameplay is GolfClubRewards {
         if (block.timestamp >= getStats(_golfClubId).readyTime) return 0;
         uint256 diff = (golfClubStats[_golfClubId].readyTime - block.timestamp);
         return diff;
-    }
-
-    function setGolfClubStats(uint256 _golfClubId) public {
-        golfClubStats[_golfClubId] = Stats(block.timestamp, maxDurability);
     }
 }

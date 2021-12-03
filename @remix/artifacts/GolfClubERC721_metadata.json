@@ -202,6 +202,19 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "gameplaySafeMintMint",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "uint256",
 						"name": "tokenId",
 						"type": "uint256"
@@ -406,6 +419,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "maxPublicCollection",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -476,6 +502,19 @@
 						"internalType": "address",
 						"name": "",
 						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "publicMintCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
 					}
 				],
 				"stateMutability": "view",
@@ -683,6 +722,19 @@
 				"type": "function"
 			},
 			{
+				"inputs": [],
+				"name": "totalMintCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
 				"inputs": [
 					{
 						"internalType": "address",
@@ -741,7 +793,7 @@
 				],
 				"name": "upgradeGolfClub",
 				"outputs": [],
-				"stateMutability": "payable",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			}
 		],
@@ -833,10 +885,10 @@
 	},
 	"sources": {
 		"1_GolfClubERC721.sol": {
-			"keccak256": "0x84016396e9cac42a8dbc72ca234f7e89eaf96f66a256bdd09392ede3bcda92d6",
+			"keccak256": "0x69d18fd2ad33d97c89501e94490f6b8de2605257caf7c1dbc8b18a2f32912fa6",
 			"urls": [
-				"bzz-raw://d8331c56455ede286510ac423e54d88af509ae289a54484752701feeeef4f635",
-				"dweb:/ipfs/QmPHKz2zaWLDtJhGsEAL7jBu944mMk3d62GvWkv9ur4vfz"
+				"bzz-raw://5caf2b44abc755b24db2cb36fd28c0a4babfb8dc638418a1b5460c808ab861ad",
+				"dweb:/ipfs/QmU4SR6yGDUjv7p1Wv2G61Y21tixYQrFygLrD9VECC5VdV"
 			]
 		},
 		"1_GolfClubFactory.sol": {
