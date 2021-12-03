@@ -244,7 +244,7 @@ const GameSlider = ({
     speed: 300,
     slidesToShow: 5,
     slidesToScroll: 1,
-    centerMode: true,
+    centerMode: false,
     centerPadding: '0px',
   }
   const currentTournament = getTournamentNumberByRoundIndex(displayRound)

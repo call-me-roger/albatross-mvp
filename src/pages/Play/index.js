@@ -89,6 +89,7 @@ const Play = () => {
   }, [])
 
   function getGolfClubById(_golfClubId) {
+    if (_golfClubId === null) return null
     const filtered = collection.filter(
       ({ id }) => Number(id) === Number(_golfClubId),
     )

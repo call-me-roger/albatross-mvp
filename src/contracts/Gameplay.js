@@ -2,7 +2,7 @@ import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { convertABI, _callback } from './utils'
 
-const GAMEPLAY_CONTRACT_ADDRESS = '0x869E1DdaD7D491BdDdc78590047a021f524522d4'
+const GAMEPLAY_CONTRACT_ADDRESS = '0xc8dBfa5c3Ef76f512e9E1092B6Bc76Ff1E7F31bc'
 const SOL_GAMEPLAY_ABI = [
   {
     anonymous: false,
@@ -21,6 +21,25 @@ const SOL_GAMEPLAY_ABI = [
       },
     ],
     name: 'OwnershipTransferred',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: '_owner',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'prizeId',
+        type: 'uint256',
+      },
+    ],
+    name: 'RoulletPrize',
     type: 'event',
   },
   {
@@ -74,6 +93,25 @@ const SOL_GAMEPLAY_ABI = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'claimNFTBalance',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'claimRewards',
     outputs: [],
@@ -94,6 +132,25 @@ const SOL_GAMEPLAY_ABI = [
         internalType: 'uint8',
         name: '',
         type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'energyBalance',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
       },
     ],
     stateMutability: 'view',
@@ -286,9 +343,54 @@ const SOL_GAMEPLAY_ABI = [
   },
   {
     inputs: [],
+    name: 'randomRoulletPrize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'renounceOwnership',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    name: 'repairBalance',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    name: 'roulettePrizePercentages',
+    outputs: [
+      {
+        internalType: 'uint8',
+        name: '',
+        type: 'uint8',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -401,6 +503,25 @@ const SOL_GAMEPLAY_ABI = [
         type: 'address',
       },
     ],
+    name: 'upgradeBalance',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
     name: 'victories',
     outputs: [
       {
@@ -435,10 +556,13 @@ const SOL_GAMEPLAY_ABI = [
 
 const GAMEPLAY_ABI = [
   'event OwnershipTransferred(address indexed previousOwner, address indexed newOwner)',
+  'event RoulletPrize(address _owner, uint256 prizeId)',
   'event RoundPlayed(uint256 _golfClubId, uint256 _matchResult, uint256 _roundId, address _owner)',
   'function claimBalance(address) view returns (uint256)',
+  'function claimNFTBalance(address) view returns (uint256)',
   'function claimRewards()',
   'function durabilityDropRate(uint256) view returns (uint8)',
+  'function energyBalance(address) view returns (uint256)',
   'function findGame() payable',
   'function getGolfClubContractAddress() view returns (address)',
   'function getStats(uint256 _golfClubId) view returns (tuple(uint256 readyTime, uint16 durability))',
@@ -449,7 +573,10 @@ const GAMEPLAY_ABI = [
   'function owner() view returns (address)',
   'function playRound(uint256 _golfClubId)',
   'function playerRounds(address, uint256) view returns (uint256 id, uint16 bonusPerkType, uint16 hole, bool victory)',
+  'function randomRoulletPrize()',
   'function renounceOwnership()',
+  'function repairBalance(address) view returns (uint256)',
+  'function roulettePrizePercentages(uint256) view returns (uint8)',
   'function secondsToPlay(uint256 _golfClubId) view returns (uint256)',
   'function sendEthFromContract(address _to, uint256 _amount)',
   'function sendEthToContract() payable',
@@ -457,6 +584,7 @@ const GAMEPLAY_ABI = [
   'function setGolfClubStats(uint256 _golfClubId)',
   'function totalRounds(address) view returns (uint256)',
   'function transferOwnership(address newOwner)',
+  'function upgradeBalance(address) view returns (uint256)',
   'function victories(address) view returns (uint256)',
   'function victoryProbability(uint256) view returns (uint8)',
 ]
@@ -464,7 +592,7 @@ const GAMEPLAY_ABI = [
 export function log() {
   console.log(convertABI(SOL_GAMEPLAY_ABI))
 }
-log()
+//log()
 
 export function getGameplaySignedContract(signer) {
   return new ethers.Contract(GAMEPLAY_CONTRACT_ADDRESS, GAMEPLAY_ABI, signer)
@@ -544,27 +672,6 @@ export async function playGame(_golfClubId, { onSend, onSuccess, onError }) {
   return result
 }
 
-export async function listenRoundPlayed(callback) {
-  const signer = provider.getSigner()
-  const address = await signer.getAddress()
-  if (address) {
-    const contract = getGameplayReadContract()
-    contract.on(
-      'RoundPlayed',
-      (_golfClubId, _matchResult, _roundId, _owner) => {
-        if (_owner === address) {
-          const result = {
-            _golfClubId: _golfClubId.toNumber(),
-            _matchResult: _matchResult.toNumber(),
-            _roundId: _roundId.toNumber(),
-          }
-          if (typeof callback === 'function') callback(result)
-        }
-      },
-    )
-  }
-}
-
 export async function getClaimBalance() {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
@@ -604,5 +711,43 @@ export async function getGameplayDetails(_golfClubId) {
   const secondsToPlay = await contract.secondsToPlay(_golfClubId)
   return {
     secondsToPlay: secondsToPlay.toNumber(),
+  }
+}
+
+export async function listenRoundPlayed(callback) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    const contract = getGameplayReadContract()
+    contract.on(
+      'RoundPlayed',
+      (_golfClubId, _matchResult, _roundId, _owner) => {
+        if (_owner === address) {
+          const result = {
+            _golfClubId: _golfClubId.toNumber(),
+            _matchResult: _matchResult.toNumber(),
+            _roundId: _roundId.toNumber(),
+          }
+          if (typeof callback === 'function') callback(result)
+        }
+      },
+    )
+  }
+}
+
+export async function listenRoulletReward(callback) {
+  const signer = provider.getSigner()
+  const address = await signer.getAddress()
+  if (address) {
+    console.log('listenRoulletReward')
+    const contract = getGameplayReadContract()
+    contract.on('RoulletPrize', (_owner, _prizeId) => {
+      if (_owner === address) {
+        const result = {
+          _prizeId: _prizeId.toNumber(),
+        }
+        if (typeof callback === 'function') callback(result)
+      }
+    })
   }
 }

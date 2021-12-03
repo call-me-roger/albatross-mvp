@@ -11,6 +11,7 @@ import useCallbackPopups from 'hooks/useCallbackPopups'
 import { TRANSFER_NFT } from 'store/application/types'
 import GolfClubNFTCard from 'components/GolfClubNFTCard'
 import useClaimOwnerBalance from 'hooks/useClaimOwnerBalance'
+import { listenRoulletReward } from 'contracts/Gameplay'
 
 const EventProvider = () => {
   const { isLoading, refreshCollection } = useGolfClubCollection({
@@ -53,6 +54,24 @@ const EventProvider = () => {
     }
   }
 
+  function roulletRewardEvent({ _prizeId }) {
+    let title = 'Nothing!'
+
+    if (_prizeId === 5) title = 'UPGRADE GOLF CLUB'
+    if (_prizeId === 4) title = 'CLAIM NFT BALANCE'
+    if (_prizeId === 3) title = 'COINS RECEIVED'
+    if (_prizeId === 2) title = 'ENERGY RESTORE'
+    if (_prizeId === 1) title = 'REPAIR KIT'
+
+    successPopup(
+      TRANSFER_NFT,
+      <div style={{ width: '280px' }}>
+        <h3 style={{ marginBottom: '20px' }}>Your prize: {title}</h3>
+        <br />
+      </div>,
+    )
+  }
+
   async function balanceUpdateEvent({ address }) {
     if (!balanceLoading) {
       startLoading()
@@ -66,6 +85,7 @@ const EventProvider = () => {
     listenTransfers(mintEvent)
     listenMarketplace(marketplaceUpdateEvent)
     listenBalance(balanceUpdateEvent)
+    listenRoulletReward(roulletRewardEvent)
     // eslint-disable-next-line
   }, [])
 
