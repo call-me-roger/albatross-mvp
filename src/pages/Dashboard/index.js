@@ -1,27 +1,24 @@
 import React, { useState } from 'react'
-import { SimpleGrid } from 'pages/Template/styles'
 import styled from '@emotion/styled'
 import { Flex } from 'rebass'
-import { theme } from 'theme'
 import { ButtonOutlined, ButtonPrimary } from 'components/Button'
 import { getMintValueByQty, mint } from 'contracts/GolfClub'
-import Input from 'components/NumericalInput'
-import { FormInputRow, InputRow, SimpleInput } from 'components/Forms/inputs'
+import { FormInputRow, SimpleInput } from 'components/Forms/inputs'
 import { MINT_RESULT_SUCCESS, MINT_START } from 'store/application/types'
 import { useApplicationState } from 'store/application/state'
 import SimpleLoader from 'components/SimpleLoader'
 import { getPreviewGif } from 'constants/game'
-import { Container } from 'components/Container/styles'
 import { useHistory } from 'react-router'
 
+const Wrapper = styled.div``
 const MintContainer = styled.div`
   padding: 15px;
+  color: ${({ theme }) => theme.text1};
 `
 
 const GifBox = styled.div`
   margin: 15px;
   width: 300px;
-  background-color: ${theme.bg1};
   img {
     width: 100%;
     border-radius: 15px;
@@ -102,7 +99,7 @@ const Dashboard = () => {
   }
 
   return (
-    <Container>
+    <Wrapper>
       <Flex style={{ padding: '15px', gap: '15px' }} justifyContent="center">
         <MintContainer>
           <h1>MINT your own GOLF CLUB!</h1>
@@ -177,7 +174,7 @@ const Dashboard = () => {
           </Flex>
         </GifBox>
       </Flex>
-    </Container>
+    </Wrapper>
   )
 }
 
