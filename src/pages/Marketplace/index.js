@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { SimpleGrid } from 'pages/Template/styles'
 import SimpleLoader from 'components/SimpleLoader'
@@ -8,6 +8,10 @@ import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
 import { useHistory } from 'react-router'
 import useListedNFTs from 'hooks/useListedNFTs'
 import useMarketplaceActions from 'hooks/useMarketplaceActions'
+import { useMarketplaceState } from 'store/marketplace/state'
+import { Flex } from 'rebass'
+import { ButtonPrimary } from 'components/Button'
+import { getTotalPages } from 'contracts/Marketplace'
 
 const Display = styled.div`
   padding: 15px;
@@ -17,9 +21,45 @@ const Display = styled.div`
 `
 
 const Marketplace = () => {
-  const { listings, isLoading, refreshListings } = useListedNFTs()
+  const { currentPage, pageLimit, totalPages, setCurrentPage, setTotalPages } =
+    useMarketplaceState()
+  const { listings, isLoading, neverLoaded, refreshListings } = useListedNFTs({
+    currentPage,
+    pageLimit,
+  })
   const { handleBuyNFT, handleCancelListing } = useMarketplaceActions()
   const history = useHistory()
+
+  useEffect(() => {
+    async function load() {
+      const total = await getTotalPages(pageLimit)
+      setTotalPages(total)
+    }
+
+    load()
+    // eslint-disable-next-line
+  }, [])
+
+  function getPagination() {
+    let items = []
+
+    for (let i = 1; i <= totalPages; i++) {
+      items.push(
+        <ButtonPrimary
+          style={{ width: 'auto', padding: '5px 10px' }}
+          disabled={i === currentPage || isLoading}
+          onClick={() => {
+            setCurrentPage(i)
+            refreshListings(i)
+          }}
+        >
+          {i}
+        </ButtonPrimary>,
+      )
+    }
+
+    return items.map((item, index) => <div key={index}>{item}</div>)
+  }
 
   return (
     <SimpleGrid>
@@ -54,6 +94,10 @@ const Marketplace = () => {
           )
         })}
       </Display>
+      <center>{isLoading && !neverLoaded && <SimpleLoader />}</center>
+      <Flex justifyContent="center" alignItems="center" style={{ gap: '5px' }}>
+        {getPagination()}
+      </Flex>
     </SimpleGrid>
   )
 }

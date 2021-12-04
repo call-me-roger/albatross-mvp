@@ -311,17 +311,35 @@ function getReadContractMarketplace() {
   )
 }
 
-export async function getListings() {
+export function getPagination(currentPage, pageLimit) {
+  return {
+    start: currentPage * pageLimit - pageLimit,
+    end: currentPage * pageLimit - 1,
+  }
+}
+
+export async function getTotalListings() {
+  const contract = getReadContractMarketplace()
+  const nextListingId = await contract.nextListingId()
+  return nextListingId.toNumber()
+}
+
+export async function getTotalPages(pageLimit) {
+  const total = await getTotalListings()
+  return total <= 0 ? 1 : parseInt(total / pageLimit + 1)
+}
+
+export async function getListings(currentPage, pageLimit) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
   const listedTokenIds = []
 
+  const { start, end } = getPagination(currentPage, pageLimit)
   if (address) {
     try {
       const contract = getReadContractMarketplace()
-      const nextListingId = await contract.nextListingId()
-      const totalListings = nextListingId.toNumber()
-      for (let i = 0; i < totalListings; i++) {
+
+      for (let i = start; i <= end; i++) {
         const bigNumberTokenId = await contract.listingIndexToToken(i)
         const tokenId = bigNumberTokenId.toNumber()
         if (listedTokenIds.indexOf(tokenId) === -1) listedTokenIds.push(tokenId)
@@ -334,11 +352,11 @@ export async function getListings() {
   return listedTokenIds
 }
 
-export async function getListedTokens() {
+export async function getListedTokens(currentPage, pageLimit) {
   const signer = provider.getSigner()
   const address = await signer.getAddress()
 
-  const listedTokenIds = await getListings()
+  const listedTokenIds = await getListings(currentPage, pageLimit)
   const result = []
   const nftContract = getNFTReadContract()
 

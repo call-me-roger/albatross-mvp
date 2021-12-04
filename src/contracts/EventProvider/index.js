@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { ethers } from 'ethers'
 import { listenTransfers, readNFTDetails } from 'contracts/GolfClub'
-import { listenMarketplace } from 'contracts/Marketplace'
+import { getTotalPages, listenMarketplace } from 'contracts/Marketplace'
 import useGolfClubCollection from 'hooks/useGolfClubCollection'
 import useListedNFTs from 'hooks/useListedNFTs'
 import { useAccountState } from 'store/account/state'
@@ -14,13 +14,17 @@ import useClaimOwnerBalance from 'hooks/useClaimOwnerBalance'
 import { listenRoulletReward } from 'contracts/Gameplay'
 import useRouletteBalances from 'hooks/useRoulletBalances'
 import { useRouletteState } from 'store/roulette/state'
+import { useMarketplaceState } from 'store/marketplace/state'
 
 const EventProvider = () => {
   const { isLoading, refreshCollection } = useGolfClubCollection({
     initialFetch: true,
   })
+  const { currentPage, pageLimit, setTotalPages } = useMarketplaceState()
   const { isLoading: marketplaceLoading, refreshListings } = useListedNFTs({
     initialFetch: true,
+    currentPage,
+    pageLimit,
   })
   const {
     isLoading: balanceLoading,
@@ -53,8 +57,10 @@ const EventProvider = () => {
     if (!isLoading) refreshCollection()
   }
 
-  function marketplaceUpdateEvent({ isMine }) {
+  async function marketplaceUpdateEvent({ isMine }) {
     if (!marketplaceLoading) {
+      const newTotal = await getTotalPages()
+      setTotalPages(newTotal)
       refreshListings()
       if (isMine) refreshClaimOwnerBalance()
     }

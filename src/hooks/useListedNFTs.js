@@ -4,7 +4,7 @@ import { orderArrayByObjAttr } from 'utils/array/sort'
 import { useMarketplaceState } from 'store/marketplace/state'
 
 const useListedNFTs = props => {
-  const { initialFetch = false } = props || {}
+  const { initialFetch = false, currentPage, pageLimit } = props || {}
   const {
     listings,
     setListings,
@@ -14,9 +14,10 @@ const useListedNFTs = props => {
     stopLoading,
   } = useMarketplaceState()
 
-  async function refreshListings() {
+  async function refreshListings(page = null) {
     startLoading()
-    const newListings = await getListedTokens()
+    const newPage = page ? page : currentPage
+    const newListings = await getListedTokens(newPage, pageLimit)
     const ordered = orderArrayByObjAttr(newListings, 'nft', 'id', true)
     setListings(ordered)
     stopLoading()

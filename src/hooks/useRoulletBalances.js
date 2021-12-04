@@ -8,7 +8,6 @@ const useRouletteBalances = props => {
 
   async function refreshBalance() {
     const newBalances = await getRoulletteBalances()
-    console.log({ newBalances })
     setBalance('upgradeBalance', newBalances.upgradeBalance)
     setBalance('claimNFTBalance', newBalances.claimNFTBalance)
     setBalance('energyBalance', newBalances.energyBalance)
