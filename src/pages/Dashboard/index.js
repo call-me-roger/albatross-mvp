@@ -3,13 +3,16 @@ import { SimpleGrid } from 'pages/Template/styles'
 import styled from '@emotion/styled'
 import { Flex } from 'rebass'
 import { theme } from 'theme'
-import { ButtonPrimary } from 'components/Button'
+import { ButtonOutlined, ButtonPrimary } from 'components/Button'
 import { getMintValueByQty, mint } from 'contracts/GolfClub'
 import Input from 'components/NumericalInput'
-import { InputRow } from 'components/Forms/inputs'
+import { FormInputRow, InputRow, SimpleInput } from 'components/Forms/inputs'
 import { MINT_RESULT_SUCCESS, MINT_START } from 'store/application/types'
 import { useApplicationState } from 'store/application/state'
 import SimpleLoader from 'components/SimpleLoader'
+import { getPreviewGif } from 'constants/game'
+import { Container } from 'components/Container/styles'
+import { useHistory } from 'react-router'
 
 const MintContainer = styled.div`
   padding: 15px;
@@ -18,14 +21,17 @@ const MintContainer = styled.div`
 const GifBox = styled.div`
   margin: 15px;
   width: 300px;
-  height: 350px;
-  border: 2px solid ${theme.text1};
   background-color: ${theme.bg1};
+  img {
+    width: 100%;
+    border-radius: 15px;
+  }
 `
 
 const Dashboard = () => {
   const [quantity, setQuantity] = useState(1)
   const { openPopup, closePopup } = useApplicationState()
+  const history = useHistory()
   const maxMintPerRequest = 5
 
   function mintedNftEffect() {
@@ -96,32 +102,82 @@ const Dashboard = () => {
   }
 
   return (
-    <SimpleGrid>
-      <Flex style={{ padding: '15px' }} justifyContent="center">
+    <Container>
+      <Flex style={{ padding: '15px', gap: '15px' }} justifyContent="center">
         <MintContainer>
-          <h1>Here you can MINT your own GOLF CLUB!</h1>
+          <h1>MINT your own GOLF CLUB!</h1>
           <h4>
-            It's a collection of 5000 exclusive and randomly generated Golf
+            It's a collection of 10000 exclusive and randomly generated Golf
             Clubs. <br />
             With 1 you can play-to-earn everyday and receive rawards to claim.
           </h4>
-          <Flex justifyContent="flex-start">
-            <InputRow>
-              <Input
-                style={{ textAlign: 'right' }}
-                value={quantity}
-                onChange={updateQuantity}
-                placeholder="Quantity"
-              />
-            </InputRow>
+          <Flex style={{ gap: '15px' }}>
+            <ButtonOutlined>Read Whitepaper</ButtonOutlined>
+            <ButtonOutlined onClick={() => history.push('/marketplace')}>
+              See marketplace
+            </ButtonOutlined>
+          </Flex>
+          <div style={{ paddingTop: '20px', maxWidth: '500px' }}>
+            <h3>How to play?</h3>
+            <p>
+              With 1 Golf Club you can play everyday and try to earn some
+              rewards.
+              <br />
+              <br />
+              1. You'll have to find a new tournament to start playing.
+              <br />
+              <br />
+              2. Each Tournament have 18 holes to complete.
+              <br />
+              <br />
+              3. The tournament starts at the hole 1, if you make a successfull
+              play then you go to the next hole.
+              <br />
+              <br />
+              4. Each Golf Club have a 24h cooldown to play again.
+              <br />
+              <br />
+              5. The #18 hole is the final hole of the tournament and have a
+              special prize.
+              <br />
+              <br />
+              6. After the #18 hole is scored and the tournament is finished,
+              you'll receive a Prize Roulette.
+              <br />
+              <br />
+              8. The Prize Roulette can give you{' '}
+              <b>
+                NFT Upgrades, NFT Claims, GOLFC Coins, Energy Recharges, Repair
+                Kits and also, if you're not lucky, nothing!
+              </b>
+            </p>
+          </div>
+        </MintContainer>
+        <GifBox>
+          <img src={getPreviewGif()} alt="Golf Club Collection Preview Gif" />
+          <Flex
+            justifyContent="flex-start"
+            flexDirection="column"
+            style={{ minWidth: '250px', maxWidth: '300px' }}
+          >
+            <div>
+              <h4 style={{ marginBottom: '0px' }}>Mint quantity</h4>
+              <FormInputRow>
+                <SimpleInput
+                  value={quantity}
+                  onChange={e => updateQuantity(e)}
+                  fontSize="18px"
+                  style={{ textAlign: 'right' }}
+                />
+              </FormInputRow>
+            </div>
             <ButtonPrimary onClick={handleMint} style={{ width: 'auto' }}>
               {getMintValueByQty(quantity)} DRC to MINT NOW!
             </ButtonPrimary>
           </Flex>
-        </MintContainer>
-        <GifBox />
+        </GifBox>
       </Flex>
-    </SimpleGrid>
+    </Container>
   )
 }
 

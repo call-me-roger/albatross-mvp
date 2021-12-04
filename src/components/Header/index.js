@@ -68,6 +68,7 @@ const HeaderControls = styled.div`
 const HeaderElement = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
 
   /* addresses safari's lack of support for "gap" */
   & > *:not(:first-child) {
@@ -134,7 +135,6 @@ const AccountElement = styled.div`
   background-color: ${({ theme, active }) => (!active ? theme.bg1 : theme.bg2)};
   border-radius: 12px;
   white-space: nowrap;
-  width: 100%;
   cursor: pointer;
 
   :focus {
@@ -271,7 +271,7 @@ function Header() {
 
       <HeaderControls>
         {isLogged && (
-          <Flex style={{ width: '100%' }} flexDirection="column">
+          <Flex flexDirection="column">
             <HeaderElement>
               <AccountElement
                 active

@@ -23,6 +23,7 @@ import useCallbackPopups from 'hooks/useCallbackPopups'
 import useGolfClubCollection from 'hooks/useGolfClubCollection'
 import useMarketplaceActions from 'hooks/useMarketplaceActions'
 import Tooltip from 'components/Tooltip'
+//import * as htmlToImage from 'html-to-image'
 
 const Display = styled.div`
   padding: 15px;
@@ -129,6 +130,45 @@ const Collection = () => {
       },
     })
   }
+
+  // const saveAs = (blob, fileName) => {
+  //   var elem = window.document.createElement('a')
+  //   elem.href = blob
+  //   elem.download = fileName
+  //   elem.style = 'display:none;'
+  //   ;(document.body || document.documentElement).appendChild(elem)
+  //   if (typeof elem.click === 'function') {
+  //     elem.click()
+  //   } else {
+  //     elem.target = '_blank'
+  //     elem.dispatchEvent(
+  //       new MouseEvent('click', {
+  //         view: window,
+  //         bubbles: true,
+  //         cancelable: true,
+  //       }),
+  //     )
+  //   }
+  //   URL.revokeObjectURL(elem.href)
+  //   elem.remove()
+  // }
+
+  // const exportAsPicture = _golfClubId => {
+  //   var data = document.getElementsByClassName(`GOLF_CLUB#${_golfClubId}`)
+
+  //   for (var i = 0; i < data.length; ++i) {
+  //     htmlToImage.toPng(data[i]).then(dataUrl => {
+  //       saveAs(dataUrl, `GOLF_CLUB${_golfClubId}.png`)
+  //     })
+  //   }
+  // }
+
+  // function handleExport() {
+  //   const ids = collection.map(({ id }) => id)
+  //   ids.forEach(id => {
+  //     exportAsPicture(id)
+  //   })
+  // }
 
   return (
     <SimpleGrid>

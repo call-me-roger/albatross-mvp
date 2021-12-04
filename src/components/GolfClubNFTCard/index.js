@@ -175,6 +175,7 @@ const GolfClubNFTCard = ({ golfClub, width, selected, onClick }) => {
       width={width}
       selected={selected}
       onClick={onClickFunc}
+      className={`GOLF_CLUB#${golfClub.id}`}
     >
       <div className="card">
         <img

@@ -24,3 +24,8 @@ export function getGameResultImage(result) {
 
   return `${imagesPath}/${image}.${format}`
 }
+
+export function getPreviewGif() {
+  const imagesPath = `${process.env.PUBLIC_URL}/images`
+  return `${imagesPath}/preview_collection.gif`
+}
