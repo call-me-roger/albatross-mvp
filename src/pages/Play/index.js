@@ -53,7 +53,6 @@ const Play = () => {
   function roundResultEffect(result) {
     const { _matchResult } = result
     setSelectedGolfClubId(null)
-    refreshCollection()
     if (_matchResult === 1) {
       refreshRewards()
       openPopup(GAME_RESULT_VICTORY, () => (

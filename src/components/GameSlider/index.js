@@ -161,6 +161,7 @@ const GameSlider = ({
         onSuccess: () => {
           closePopup(START_GAME)
           refreshRounds()
+          refreshCollection()
         },
       })
     }
