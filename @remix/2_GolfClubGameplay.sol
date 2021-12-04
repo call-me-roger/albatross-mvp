@@ -19,7 +19,8 @@ contract GolfClubGameplay is GolfClubRewards {
     uint256 bonusForPerk = 1;
     uint256 nextRoundId = 0;
     uint16 roundsPerGame = 18;
-    uint8[] public victoryProbability = [45, 50, 57, 68, 80]; // Common, Uncommon, Rare, Epic, Legendary
+    //uint8[] public victoryProbability = [45, 50, 57, 68, 80]; // Common, Uncommon, Rare, Epic, Legendary
+    uint8[] public victoryProbability = [55, 60, 67, 78, 90]; // Common, Uncommon, Rare, Epic, Legendary
     uint8[] public durabilityDropRate = [6, 5, 4, 3, 2]; // Common, Uncommon, Rare, Epic, Legendary
 
     struct Round {
