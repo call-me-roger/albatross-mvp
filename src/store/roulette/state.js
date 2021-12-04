@@ -7,6 +7,9 @@ const marketplaceState = createState({
   upgradeBalance: 0,
   energyBalance: 0,
   repairBalance: 0,
+  showRoulette: false,
+  readyToClose: false,
+  selectedPrize: null,
 })
 
 export function useRouletteState() {
@@ -34,11 +37,35 @@ export function useRouletteState() {
     get repairBalance() {
       return state.repairBalance.get()
     },
+    get selectedPrize() {
+      return state.selectedPrize.get()
+    },
+    get showRoulette() {
+      return state.showRoulette.get()
+    },
+    get readyToClose() {
+      return state.readyToClose.get()
+    },
     setBalance(type, value) {
       return state[type].set(value)
     },
+    setPrize(_prizeId) {
+      return state.selectedPrize.set(_prizeId)
+    },
+    toggleShowRoulette(bool) {
+      return state.showRoulette.set(bool)
+    },
+    setReadyToClose(bool) {
+      return state.readyToClose.set(bool)
+    },
+    closeRoulette() {
+      if (state.readyToClose.get()) {
+        state.showRoulette.set(false)
+        state.selectedPrize.set(null)
+      }
+    },
     startLoading() {
-      state.isLoading.set(true)
+      return state.isLoading.set(true)
     },
     stopLoading() {
       state.isLoading.set(false)

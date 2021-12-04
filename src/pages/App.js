@@ -8,6 +8,7 @@ import { CHAIN_ID, metamaskParams, provider } from 'constants/provider'
 import Header from 'components/Header'
 import ModalProvider from 'components/ModalProvider'
 import ProtectedRoute from 'components/ProtectedRoute'
+import RouletteProvider from 'components/RouletteProvider'
 import { useAccountState } from '../store/account/state'
 import EventProvider from 'contracts/EventProvider'
 
@@ -90,6 +91,7 @@ function App() {
         <AppWrapper>
           <ModalProvider />
           <EventProvider />
+          <RouletteProvider />
 
           <HeaderWrapper>
             <Header />

@@ -13,6 +13,7 @@ import GolfClubNFTCard from 'components/GolfClubNFTCard'
 import useClaimOwnerBalance from 'hooks/useClaimOwnerBalance'
 import { listenRoulletReward } from 'contracts/Gameplay'
 import useRouletteBalances from 'hooks/useRoulletBalances'
+import { useRouletteState } from 'store/roulette/state'
 
 const EventProvider = () => {
   const { isLoading, refreshCollection } = useGolfClubCollection({
@@ -33,6 +34,7 @@ const EventProvider = () => {
   const { refreshBalance: refreshRoulletBalances } = useRouletteBalances({
     initialFetch: true,
   })
+  const { toggleShowRoulette, setPrize, setReadyToClose } = useRouletteState()
 
   const { successPopup } = useCallbackPopups()
 
@@ -60,21 +62,16 @@ const EventProvider = () => {
 
   function roulletRewardEvent({ _prizeId }) {
     refreshRoulletBalances()
-    let title = 'Nothing!'
 
-    if (_prizeId === 5) title = 'UPGRADE GOLF CLUB'
-    if (_prizeId === 4) title = 'CLAIM NFT BALANCE'
-    if (_prizeId === 3) title = 'COINS RECEIVED'
-    if (_prizeId === 2) title = 'ENERGY RESTORE'
-    if (_prizeId === 1) title = 'REPAIR KIT'
+    setPrize(_prizeId)
+    toggleShowRoulette(true)
 
-    successPopup(
-      TRANSFER_NFT,
-      <div style={{ width: '280px' }}>
-        <h3 style={{ marginBottom: '20px' }}>Your prize: {title}</h3>
-        <br />
-      </div>,
-    )
+    setTimeout(() => {
+      setTimeout(() => {
+        setReadyToClose(true)
+      }, [5000])
+      setPrize(_prizeId)
+    }, [1000])
   }
 
   async function balanceUpdateEvent({ address }) {
