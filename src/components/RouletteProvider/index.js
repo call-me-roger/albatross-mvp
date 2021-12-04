@@ -77,7 +77,7 @@ const RoulettePriveder = () => {
       style={{
         width: '100%',
         height: '100vh',
-        position: 'absolute',
+        position: 'fixed',
         top: '0px',
         left: '0px',
         right: '0px',

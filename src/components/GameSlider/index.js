@@ -15,6 +15,7 @@ import { getGameSceneImage } from 'constants/game'
 import { useApplicationState } from 'store/application/state'
 import { FIND_TOURNAMENT, START_GAME } from 'store/application/types'
 import useTournaments from 'hooks/useTournaments'
+import useCallbackPopups from 'hooks/useCallbackPopups'
 
 const Game = styled.div`
   width: 90vw;
@@ -139,47 +140,29 @@ const GameSlider = ({
     isLoading,
     neverLoaded,
     startLoading,
+    stopLoading,
     refreshRounds,
     setDisplayRound,
     sliderRef,
   } = useTournaments({ initialFetch: true })
   const { openPopup, closePopup } = useApplicationState()
-
-  async function playGameEffect() {
-    openPopup(START_GAME, () => (
-      <div align="center">
-        <h3>Transaction sent. </h3>
-        <h4>Waiting block confirmations...</h4>
-        <SimpleLoader />
-      </div>
-    ))
-  }
-
-  async function playGameError(tryAgain) {
-    openPopup(START_GAME, () => (
-      <div align="center">
-        <h3>Something unexpected happened!</h3>
-        <h4>You can try again...</h4>
-        <ButtonPrimary onClick={tryAgain}>Play again!</ButtonPrimary>
-      </div>
-    ))
-  }
+  const { waitingUser, onSendTx, errorPopup } = useCallbackPopups()
 
   async function handlePlayGame(_golfClubId) {
-    function tryAgain() {
-      closePopup(START_GAME)
-      handlePlayGame(_golfClubId)
-    }
-
     if (_golfClubId) {
       startLoading()
+      waitingUser(START_GAME)
       await playGame(_golfClubId, {
-        onSend: playGameEffect,
-        onError: () => playGameError(tryAgain),
-        onSuccess: () => closePopup(START_GAME),
+        onSend: () => onSendTx(START_GAME),
+        onError: err => {
+          errorPopup(START_GAME, 'Error trying to play the game!', err)
+          stopLoading()
+        },
+        onSuccess: () => {
+          closePopup(START_GAME)
+          refreshRounds()
+        },
       })
-      refreshCollection()
-      refreshRounds()
     }
   }
 

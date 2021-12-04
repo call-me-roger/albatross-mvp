@@ -54,6 +54,7 @@ const Play = () => {
     const { _matchResult } = result
     setSelectedGolfClubId(null)
     if (_matchResult === 1) {
+      refreshCollection()
       refreshRewards()
       openPopup(GAME_RESULT_VICTORY, () => (
         <GameScene image={getGameResultImage('win')}>

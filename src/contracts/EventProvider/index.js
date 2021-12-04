@@ -61,16 +61,18 @@ const EventProvider = () => {
   }
 
   function roulletRewardEvent({ _prizeId }) {
-    refreshRoulletBalances()
-
-    setPrize(_prizeId)
-    toggleShowRoulette(true)
-
     setTimeout(() => {
-      setTimeout(() => {
-        setReadyToClose(true)
-      }, [5000])
+      refreshRoulletBalances()
+
       setPrize(_prizeId)
+      toggleShowRoulette(true)
+
+      setTimeout(() => {
+        setTimeout(() => {
+          setReadyToClose(true)
+        }, [5000])
+        setPrize(_prizeId)
+      }, [1000])
     }, [1000])
   }
 
