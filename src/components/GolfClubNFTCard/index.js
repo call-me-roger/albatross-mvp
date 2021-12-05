@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import moment from 'moment'
 import styled from 'styled-components'
 import { darken, lighten } from 'polished'
@@ -8,6 +8,7 @@ import {
   getRarityTextByInt,
   getSecondsToPlayPercentage,
 } from 'contracts/GolfClub'
+import SimpleLoader from 'components/SimpleLoader'
 
 const Item = styled.div`
   cursor: pointer;
@@ -17,6 +18,7 @@ const Item = styled.div`
   border-radius: 15px;
   transform: ${({ selected }) => (selected ? 'scale(1.1)' : 'scale(1)')};
   background-color: ${({ background }) => lighten('0.3', background)};
+  aspect-ratio: 1 / 1;
 
   text-align: center;
 
@@ -26,6 +28,7 @@ const Item = styled.div`
     overflow: hidden;
     padding: 20px 50px;
     background-color: ${({ background }) => background};
+    aspect-ratio: 1 / 1;
   }
 
   .action-button {
@@ -162,12 +165,26 @@ const SecondsToPlay = styled.div`
 `
 
 const GolfClubNFTCard = ({ golfClub, width, selected, onClick }) => {
+  const [isLoaded, setLoaded] = useState(false)
+  const [canTryAgain, setTryAgain] = useState(8)
+  const [refreshTimer, setRefreshTime] = useState(1000)
+  const [hash, setHash] = useState('default')
   const { secondsToPlay } = golfClub?.gameplay || {}
   const readyTime = moment.utc(secondsToPlay * 1000).format('HH:mm:ss')
   const canPlay = secondsToPlay <= 0
   const canPlayText = canPlay ? 'Ready!' : `Next game: ${readyTime}`
   const background = getBackgroundByRarity(golfClub.rarity)
   const onClickFunc = typeof onClick === 'function' ? onClick : () => {}
+
+  function loadAgain() {
+    if (canTryAgain > 0) {
+      setTimeout(() => {
+        setTryAgain(canTryAgain - 1)
+        setRefreshTime(refreshTimer + 1000)
+        setHash(Date.now())
+      }, [refreshTimer])
+    }
+  }
 
   return (
     <Item
@@ -176,12 +193,18 @@ const GolfClubNFTCard = ({ golfClub, width, selected, onClick }) => {
       selected={selected}
       onClick={onClickFunc}
       className={`GOLF_CLUB#${golfClub.id}`}
+      loaded={isLoaded}
     >
       <div className="card">
+        {!isLoaded && <SimpleLoader />}
         <img
-          src={golfClub.tokenURI}
+          src={`${golfClub.tokenURI}?${hash}`}
           style={{ width: '100%' }}
           alt={golfClub.name}
+          onLoad={() => {
+            setLoaded(true)
+          }}
+          onError={loadAgain}
         />
         <Level background={background}>{golfClub.level}</Level>
         <Attributes background={background}>

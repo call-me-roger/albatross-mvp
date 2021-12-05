@@ -2,7 +2,7 @@ import { createState, useState } from '@hookstate/core'
 import { Persistence } from '@hookstate/persistence'
 
 const localState = createState({
-  themeDarkMode: false
+  themeDarkMode: true,
 })
 
 export function useLocalState() {
@@ -15,6 +15,6 @@ export function useLocalState() {
     },
     toggleDarkMode() {
       state.themeDarkMode.set(isDarkMode => !isDarkMode)
-    }
+    },
   }
 }
