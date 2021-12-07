@@ -3,8 +3,11 @@ import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import Slider from 'react-slick'
 import { Flex } from 'rebass'
-import GolfClubNFTInteractiveCard from 'components/GolfClubNFTInteractiveCard'
+import GolfClubNFTInteractiveCard, {
+  NFT_CARD_WIDTH,
+} from 'components/GolfClubNFTInteractiveCard'
 import { ButtonPrimary } from 'components/Button'
+import { useWindowSize } from 'hooks/useWindowSize'
 
 const Game = styled.div`
   width: 90vw;
@@ -26,6 +29,7 @@ const CollectionSlider = ({
   selectedGolfClubId,
 }) => {
   const [onlyReady, setOnlyReady] = useState(true)
+  const { width } = useWindowSize()
   const slider = useRef(null)
 
   function toggleShow() {
@@ -39,8 +43,8 @@ const CollectionSlider = ({
     infinite: false,
     autoplay: false,
     speed: 300,
-    slidesToShow: 6,
-    slidesToScroll: 5,
+    slidesToShow: parseInt(width / NFT_CARD_WIDTH),
+    slidesToScroll: 1,
   }
 
   const filtered = collection?.filter(golfClub => {

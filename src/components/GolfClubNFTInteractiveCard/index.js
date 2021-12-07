@@ -4,8 +4,10 @@ import { ButtonPrimary } from 'components/Button'
 import GolfClubNFTCard from 'components/GolfClubNFTCard'
 import { Flex } from 'rebass'
 
+export const NFT_CARD_WIDTH = 250
+
 const Item = styled.div`
-  width: ${({ width = '100%' }) => width};
+  width: ${NFT_CARD_WIDTH}px;
   padding: 1%;
 `
 
