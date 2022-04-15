@@ -5,7 +5,7 @@ import { getGameplayDetails } from './Gameplay'
 import { convertABI, _callback } from './utils'
 
 export const GOLF_CLUB_CONTRACT_ADDRESS =
-  '0x95c9485dc3E96edF24a4ec904cD5a8054374a9B0'
+  '0x786Db1f6d1998D70BF806688ED8cDFe3917fC16f'
 const SOL_NFT_ABI = [
   {
     inputs: [],

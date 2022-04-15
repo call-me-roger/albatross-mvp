@@ -2,7 +2,7 @@ import { provider } from 'constants/provider'
 import { ethers } from 'ethers'
 import { convertABI, _callback } from './utils'
 
-const GAMEPLAY_CONTRACT_ADDRESS = '0x8732090b52a011138a51709A1Ee4B157F62f15db'
+const GAMEPLAY_CONTRACT_ADDRESS = '0x246C65e008Eee96bfC44934d4dC8A877dF61171d'
 const SOL_GAMEPLAY_ABI = [
   {
     anonymous: false,

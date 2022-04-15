@@ -10,7 +10,7 @@ export const CHAIN_ID = '0x102D' // Hex of 4141
 export const metamaskParams = [
   {
     chainId: CHAIN_ID,
-    chainName: 'DRC: Testnet',
-    rpcUrls: ['https://testnet.doric.network'],
+    chainName: 'DRC: Mainnet',
+    rpcUrls: ['https://mainnet.doric.network'],
   },
 ]
